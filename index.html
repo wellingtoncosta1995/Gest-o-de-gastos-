@@ -57,6 +57,15 @@
   .sair { color: var(--debit); font-size: 13px; cursor:pointer; }
   .acoes-header { display:flex; align-items:center; gap:14px; }
   .perfil { color:var(--brass-dark); font-size:13px; font-weight:700; cursor:pointer; }
+  .header-resumo { display:block; margin-top:18px; margin-bottom:28px; }
+  .perfil-atalho { display:inline-flex; align-items:center; gap:8px; border:0; background:transparent; padding:0; color:var(--brass-dark); font-weight:700; font-size:13px; cursor:pointer; }
+  .perfil-mini { width:30px; height:30px; border-radius:50%; background:var(--paper-dark); color:var(--brass-dark); display:grid; place-items:center; overflow:hidden; font-size:12px; }
+  .perfil-mini img { width:100%; height:100%; object-fit:cover; }
+  .header-resumo h1 { margin-top:27px; }
+  .perfil-foto-area { display:flex; justify-content:center; margin:4px 0 20px; }
+  .perfil-foto { width:84px; height:84px; border-radius:50%; background:var(--paper-dark); border:2px dashed var(--brass); color:var(--brass-dark); display:flex; align-items:center; justify-content:center; text-align:center; padding:8px; overflow:hidden; font-size:11px; font-weight:700; cursor:pointer; }
+  .perfil-foto img { width:100%; height:100%; object-fit:cover; }
+  .sair-perfil { display:block; width:100%; border:0; background:transparent; color:var(--debit); font-size:14px; padding:8px; margin-top:10px; cursor:pointer; }
   .nota-seguranca { background:var(--paper-dark); color:var(--ink-soft); border-radius:8px; padding:10px; font-size:12px; line-height:1.4; }
 
   .card-total { background: var(--ink); border-radius: 14px; padding: 20px; margin-bottom: 16px; }
@@ -161,9 +170,9 @@
 
   <!-- RESUMO -->
   <div class="screen" id="tela-resumo">
-    <div class="header">
+    <div class="header header-resumo">
+      <button class="perfil-atalho" onclick="abrirPerfil()"><span class="perfil-mini" id="perfil-mini">MP</span><span>Meu perfil</span></button>
       <h1>Resumo do mês</h1>
-      <div class="acoes-header"><span class="perfil" onclick="abrirPerfil()">Meu perfil</span><span class="sair" onclick="sair()">Sair</span></div>
     </div>
 
     <div class="card-total">
@@ -292,6 +301,7 @@
   <div class="modal-fundo" id="modal-perfil">
     <div class="modal-cartao">
       <h3>Meu perfil</h3>
+      <div class="perfil-foto-area"><label class="perfil-foto" for="perfil-foto-input" id="perfil-foto-preview">Adicionar foto</label><input id="perfil-foto-input" type="file" accept="image/*" style="display:none" onchange="alterarFotoPerfil(event)"></div>
       <div class="campo"><label>Nome completo</label><input type="text" id="perfil-nome" placeholder="Como quer ser chamado"></div>
       <div class="campo"><label>Telefone</label><input type="tel" id="perfil-telefone" placeholder="(00) 00000-0000"></div>
       <div class="campo"><label>Renda mensal (R$)</label><input type="text" id="perfil-renda" placeholder="0,00" inputmode="decimal"></div>
@@ -299,6 +309,7 @@
       <div class="nota-seguranca" id="nota-biometria">Após salvar seu perfil, você poderá ativar o desbloqueio com Face ID/biometria deste aparelho.</div>
       <button class="modal-salvar" onclick="salvarPerfil()">Salvar perfil</button>
       <button class="modal-salvar" id="btn-biometria" style="display:none;background:var(--ink);margin-top:10px" onclick="ativarBiometria()">Ativar Face ID / biometria</button>
+      <button class="sair-perfil" onclick="sair()">Sair da conta</button>
       <div class="modal-cancelar" onclick="fecharModal('modal-perfil')">Cancelar</div>
     </div>
   </div>
@@ -412,6 +423,7 @@ async function mostrarApp() {
   document.getElementById('tabbar').style.display = 'flex';
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelector('.tab[data-tela="tela-resumo"]').classList.add('active');
+  atualizarFotoPerfil();
   await carregarTudo();
 }
 
@@ -443,6 +455,36 @@ function fecharModal(id) { document.getElementById(id).classList.remove('aberto'
 // ---------- PERFIL E BIOMETRIA ----------
 function chaveBiometria() { return usuarioAtual ? 'biometria-ativa-' + usuarioAtual.id : ''; }
 function biometriaAtiva() { return !!chaveBiometria() && localStorage.getItem(chaveBiometria()) === 'true'; }
+function chaveFotoPerfil() { return usuarioAtual ? 'foto-perfil-' + usuarioAtual.id : ''; }
+
+function atualizarFotoPerfil() {
+  const foto = chaveFotoPerfil() ? localStorage.getItem(chaveFotoPerfil()) : '';
+  const mini = document.getElementById('perfil-mini');
+  const preview = document.getElementById('perfil-foto-preview');
+  const iniciais = (usuarioAtual?.user_metadata?.perfil?.nome || usuarioAtual?.email || 'MP').split(/\s|@/).filter(Boolean).slice(0, 2).map(p => p[0]).join('').toUpperCase();
+  if (mini) mini.innerHTML = foto ? `<img src="${foto}" alt="Foto do perfil">` : iniciais;
+  if (preview) preview.innerHTML = foto ? `<img src="${foto}" alt="Foto do perfil">` : 'Adicionar foto';
+}
+
+function alterarFotoPerfil(evento) {
+  const arquivo = evento.target.files?.[0];
+  if (!arquivo) return;
+  if (!arquivo.type.startsWith('image/')) { alert('Escolha um arquivo de imagem.'); return; }
+  const leitor = new FileReader();
+  leitor.onload = () => {
+    const imagem = new Image();
+    imagem.onload = () => {
+      const tamanho = 240, escala = Math.max(tamanho / imagem.width, tamanho / imagem.height);
+      const largura = Math.round(imagem.width * escala), altura = Math.round(imagem.height * escala);
+      const tela = document.createElement('canvas'); tela.width = tamanho; tela.height = tamanho;
+      const ctx = tela.getContext('2d'); ctx.drawImage(imagem, (tamanho - largura) / 2, (tamanho - altura) / 2, largura, altura);
+      try { localStorage.setItem(chaveFotoPerfil(), tela.toDataURL('image/jpeg', .82)); atualizarFotoPerfil(); }
+      catch (erro) { console.error(erro); alert('Não foi possível guardar esta foto. Escolha uma imagem menor.'); }
+    };
+    imagem.src = leitor.result;
+  };
+  leitor.readAsDataURL(arquivo);
+}
 
 function abrirPerfil() {
   const perfil = usuarioAtual?.user_metadata?.perfil || {};
@@ -450,6 +492,7 @@ function abrirPerfil() {
   document.getElementById('perfil-telefone').value = perfil.telefone || '';
   document.getElementById('perfil-renda').value = perfil.renda || '';
   document.getElementById('perfil-objetivo').value = perfil.objetivo || '';
+  atualizarFotoPerfil();
   const suportada = window.PublicKeyCredential && location.hostname;
   const botao = document.getElementById('btn-biometria');
   botao.style.display = suportada ? 'block' : 'none';
