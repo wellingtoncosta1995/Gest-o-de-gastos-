@@ -55,6 +55,9 @@
   .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
   .header h1 { font-size: 22px; color: var(--ink); margin:0; font-weight:700; }
   .sair { color: var(--debit); font-size: 13px; cursor:pointer; }
+  .acoes-header { display:flex; align-items:center; gap:14px; }
+  .perfil { color:var(--brass-dark); font-size:13px; font-weight:700; cursor:pointer; }
+  .nota-seguranca { background:var(--paper-dark); color:var(--ink-soft); border-radius:8px; padding:10px; font-size:12px; line-height:1.4; }
 
   .card-total { background: var(--ink); border-radius: 14px; padding: 20px; margin-bottom: 16px; }
   .card-total .rotulo { color: var(--paper-dark); font-size: 13px; }
@@ -160,7 +163,7 @@
   <div class="screen" id="tela-resumo">
     <div class="header">
       <h1>Resumo do mês</h1>
-      <span class="sair" onclick="sair()">Sair</span>
+      <div class="acoes-header"><span class="perfil" onclick="abrirPerfil()">Meu perfil</span><span class="sair" onclick="sair()">Sair</span></div>
     </div>
 
     <div class="card-total">
@@ -285,6 +288,21 @@
     </div>
   </div>
 
+  <!-- MODAL: PERFIL -->
+  <div class="modal-fundo" id="modal-perfil">
+    <div class="modal-cartao">
+      <h3>Meu perfil</h3>
+      <div class="campo"><label>Nome completo</label><input type="text" id="perfil-nome" placeholder="Como quer ser chamado"></div>
+      <div class="campo"><label>Telefone</label><input type="tel" id="perfil-telefone" placeholder="(00) 00000-0000"></div>
+      <div class="campo"><label>Renda mensal (R$)</label><input type="text" id="perfil-renda" placeholder="0,00" inputmode="decimal"></div>
+      <div class="campo"><label>Principal objetivo financeiro</label><input type="text" id="perfil-objetivo" placeholder="Ex: montar reserva de emergência"></div>
+      <div class="nota-seguranca" id="nota-biometria">Após salvar seu perfil, você poderá ativar o desbloqueio com Face ID/biometria deste aparelho.</div>
+      <button class="modal-salvar" onclick="salvarPerfil()">Salvar perfil</button>
+      <button class="modal-salvar" id="btn-biometria" style="display:none;background:var(--ink);margin-top:10px" onclick="ativarBiometria()">Ativar Face ID / biometria</button>
+      <div class="modal-cancelar" onclick="fecharModal('modal-perfil')">Cancelar</div>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -299,6 +317,7 @@ let gastos = [];
 let dividas = [];
 let metas = [];
 let modoCadastro = false;
+let usuarioAtual = null;
 
 function formatarReal(v) {
   return Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -365,6 +384,7 @@ async function sair() {
 
 sb.auth.onAuthStateChange((event, session) => {
   document.getElementById('carregando').style.display = 'none';
+  usuarioAtual = session?.user || null;
   if (session) {
     mostrarApp();
   } else {
@@ -379,6 +399,14 @@ function mostrarLogin() {
 }
 
 async function mostrarApp() {
+  if (biometriaAtiva()) {
+    const liberado = await verificarBiometria();
+    if (!liberado) {
+      alert('Não foi possível confirmar sua biometria. Entre novamente com e-mail e senha.');
+      await sb.auth.signOut();
+      return;
+    }
+  }
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('tela-resumo').classList.add('active');
   document.getElementById('tabbar').style.display = 'flex';
@@ -411,6 +439,69 @@ function irPara(idTela, elTab) {
 }
 function abrirModal(id) { document.getElementById(id).classList.add('aberto'); }
 function fecharModal(id) { document.getElementById(id).classList.remove('aberto'); }
+
+// ---------- PERFIL E BIOMETRIA ----------
+function chaveBiometria() { return usuarioAtual ? 'biometria-ativa-' + usuarioAtual.id : ''; }
+function biometriaAtiva() { return !!chaveBiometria() && localStorage.getItem(chaveBiometria()) === 'true'; }
+
+function abrirPerfil() {
+  const perfil = usuarioAtual?.user_metadata?.perfil || {};
+  document.getElementById('perfil-nome').value = perfil.nome || '';
+  document.getElementById('perfil-telefone').value = perfil.telefone || '';
+  document.getElementById('perfil-renda').value = perfil.renda || '';
+  document.getElementById('perfil-objetivo').value = perfil.objetivo || '';
+  const suportada = window.PublicKeyCredential && location.hostname;
+  const botao = document.getElementById('btn-biometria');
+  botao.style.display = suportada ? 'block' : 'none';
+  document.getElementById('nota-biometria').textContent = biometriaAtiva()
+    ? 'Biometria ativa neste aparelho. O Face ID será solicitado ao abrir o app.'
+    : suportada ? 'Ative o Face ID/biometria deste aparelho após salvar. Seus dados biométricos não são enviados ao app.' : 'A biometria só pode ser ativada quando o app estiver publicado em HTTPS.';
+  abrirModal('modal-perfil');
+}
+
+async function salvarPerfil() {
+  if (!usuarioAtual) return;
+  const perfil = {
+    nome: document.getElementById('perfil-nome').value.trim(),
+    telefone: document.getElementById('perfil-telefone').value.trim(),
+    renda: document.getElementById('perfil-renda').value.trim(),
+    objetivo: document.getElementById('perfil-objetivo').value.trim()
+  };
+  const { data, error } = await sb.auth.updateUser({ data: { ...usuarioAtual.user_metadata, perfil } });
+  if (informarErro(error, 'salvar seu perfil')) return;
+  usuarioAtual = data.user;
+  alert('Perfil salvo com sucesso.');
+  abrirPerfil();
+}
+
+function bytesAleatorios() { const bytes = new Uint8Array(32); crypto.getRandomValues(bytes); return bytes; }
+
+async function ativarBiometria() {
+  if (!usuarioAtual || !window.PublicKeyCredential || !location.hostname) { alert('A biometria estará disponível no link publicado do app.'); return; }
+  try {
+    await navigator.credentials.create({ publicKey: {
+      challenge: bytesAleatorios(),
+      rp: { name: 'Gestão de Gastos', id: location.hostname },
+      user: { id: new TextEncoder().encode(usuarioAtual.id), name: usuarioAtual.email || usuarioAtual.id, displayName: usuarioAtual.user_metadata?.perfil?.nome || usuarioAtual.email || 'Usuário' },
+      pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+      authenticatorSelection: { residentKey: 'required', userVerification: 'required' },
+      timeout: 60000
+    }});
+    localStorage.setItem(chaveBiometria(), 'true');
+    alert('Biometria ativada neste aparelho. Na próxima abertura, use o Face ID para desbloquear o app.');
+    abrirPerfil();
+  } catch (erro) {
+    console.error(erro);
+    alert('A biometria não foi ativada. Verifique se o Face ID está configurado neste aparelho.');
+  }
+}
+
+async function verificarBiometria() {
+  try {
+    await navigator.credentials.get({ publicKey: { challenge: bytesAleatorios(), rpId: location.hostname, userVerification: 'required', timeout: 60000 } });
+    return true;
+  } catch (erro) { console.warn('Biometria não confirmada', erro); return false; }
+}
 
 // ---------- GASTOS ----------
 async function salvarGasto() {
