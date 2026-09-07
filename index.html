@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestão de Gastos</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Gestão de Gastos">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+  :root {
+    --paper: #F4EFE1;
+    --paper-dark: #E8E0CB;
+    --ink: #1F2A44;
+    --ink-soft: #4B5670;
+    --debit: #B23A3A;
+    --credit: #3F6B4A;
+    --brass: #B08D57;
+    --brass-dark: #8C6D3F;
+    --card: #FBF8F0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #d8d2c0;
+    display: flex;
+    justify-content: center;
+    padding: 24px 0;
+  }
+  .phone {
+    width: 390px;
+    max-width: 100%;
+    background: var(--paper);
+    min-height: 780px;
+    border-radius: 28px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  .screen {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    padding-bottom: 90px;
+    display: none;
+  }
+  .screen.active { display: block; }
+
+  .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+  .header h1 { font-size: 22px; color: var(--ink); margin:0; font-weight:700; }
+  .sair { color: var(--debit); font-size: 13px; cursor:pointer; }
+
+  .card-total { background: var(--ink); border-radius: 14px; padding: 20px; margin-bottom: 16px; }
+  .card-total .rotulo { color: var(--paper-dark); font-size: 13px; }
+  .card-total .valor { color: var(--paper); font-size: 30px; font-weight: 700; margin-top: 4px; }
+
+  .card { background: var(--card); border: 1px solid var(--paper-dark); border-radius: 14px; padding: 18px; margin-bottom: 16px; }
+  .card h3 { margin: 0 0 12px 0; font-size: 15px; color: var(--ink); }
+  .vazio { color: var(--ink-soft); text-align: center; padding: 16px 0; font-size: 14px; }
+
+  .legend-item { display:flex; align-items:center; gap:6px; font-size:12px; color: var(--ink); margin-bottom:4px; }
+  .dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+
+  .meta-row, .divida-row { margin-bottom: 14px; }
+  .linha-entre { display:flex; justify-content:space-between; margin-bottom:2px; }
+  .nome { font-weight: 700; color: var(--ink); font-size: 15px; }
+  .status { font-weight:600; font-size: 13px; }
+  .status.quitada { color: var(--credit); }
+  .status.pendente { color: var(--brass-dark); }
+  .detalhe { color: var(--ink-soft); font-size: 12px; margin-bottom: 6px; }
+  .trilha { height:7px; background: var(--paper-dark); border-radius: 4px; overflow:hidden; }
+  .progresso { height:7px; background: var(--credit); }
+  .progresso.brass { background: var(--brass); }
+  .link-acao { color: var(--ink); text-decoration: underline; font-size: 12px; margin-top:6px; display:inline-block; cursor:pointer; }
+
+  .btn-flutuante {
+    background: var(--brass); color: var(--paper); border:none; border-radius: 30px;
+    padding: 14px; width: 100%; font-weight:700; font-size: 15px; margin-top: 8px; cursor:pointer;
+  }
+  .adicionar { color: var(--brass-dark); font-weight:700; font-size:14px; cursor:pointer; }
+
+  .tabbar {
+    position: absolute; bottom:0; left:0; right:0; height:74px;
+    background: var(--card); border-top: 1px solid var(--paper-dark);
+    display:flex; align-items:center; justify-content: space-around;
+  }
+  .tab { text-align:center; color: var(--ink-soft); font-size: 11px; cursor:pointer; }
+  .tab.active { color: var(--brass-dark); font-weight:700; }
+  .tab .icone { font-size: 20px; display:block; }
+
+  .modal-fundo {
+    position: absolute; inset:0; background: rgba(31,42,68,0.45);
+    display:none; align-items:flex-end; z-index: 10;
+  }
+  .modal-fundo.aberto { display:flex; }
+  .modal-cartao {
+    background: var(--paper); width:100%; border-radius: 20px 20px 0 0; padding: 22px;
+  }
+  .modal-cartao h3 { color: var(--ink); margin: 0 0 16px 0; }
+  .campo { margin-bottom: 14px; }
+  .campo label { display:block; color: var(--ink-soft); font-size: 12px; margin-bottom: 4px; }
+  .campo input, .campo select {
+    width:100%; padding: 10px 12px; border-radius:8px; border:1px solid var(--paper-dark);
+    background: var(--card); color: var(--ink); font-size: 15px;
+  }
+  .modal-salvar { background: var(--brass); color:var(--paper); border:none; border-radius:8px; padding:13px; width:100%; font-weight:700; margin-top:6px; cursor:pointer; }
+  .modal-cancelar { text-align:center; color: var(--ink-soft); margin-top:14px; cursor:pointer; font-size:14px; }
+
+  #tela-login { display:flex; flex-direction:column; justify-content:center; height:100%; padding:28px; }
+  #tela-login h1 { text-align:center; color:var(--ink); font-size:30px; margin-bottom:4px; }
+  #tela-login .sub { text-align:center; color:var(--ink-soft); margin-bottom:28px; font-size:14px; }
+  #tela-login .erro { color: var(--debit); font-size: 13px; text-align:center; margin-top:10px; min-height:16px; }
+  #tela-login .alternar { text-align:center; margin-top:16px; color:var(--ink); text-decoration:underline; cursor:pointer; font-size:14px; }
+  #carregando { display:flex; align-items:center; justify-content:center; height:100%; color:var(--ink-soft); }
+  .gasto-row { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--paper-dark); }
+  .gasto-row:last-child { border-bottom:0; }
+  .gasto-info { min-width:0; }
+  .gasto-desc { color:var(--ink); font-size:14px; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .gasto-meta { color:var(--ink-soft); font-size:12px; margin-top:2px; }
+  .gasto-valor { color:var(--debit); font-size:14px; font-weight:700; white-space:nowrap; }
+  .btn-excluir { border:0; background:transparent; color:var(--debit); padding:5px; font-size:16px; cursor:pointer; }
+  @media (max-width: 480px) { body { padding:0; background:var(--paper); } .phone { width:100%; min-height:100vh; border-radius:0; box-shadow:none; } .screen { padding:18px; padding-bottom:90px; } }
+</style>
+  <meta name="theme-color" content="#1F2A44">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icon-192.png">
+</head>
+<body>
+
+<div class="phone">
+
+  <div id="carregando">Carregando...</div>
+
+  <!-- LOGIN -->
+  <div class="screen" id="tela-login">
+    <h1>Gestão de Gastos</h1>
+    <div class="sub">Seus gastos, em ordem.</div>
+    <div class="campo">
+      <label>E-mail</label>
+      <input type="email" id="login-email" placeholder="voce@email.com">
+    </div>
+    <div class="campo">
+      <label>Senha</label>
+      <input type="password" id="login-senha" placeholder="mínimo 6 caracteres">
+    </div>
+    <button class="modal-salvar" id="btn-login" onclick="entrar()">Entrar</button>
+    <div class="erro" id="login-erro"></div>
+    <div class="alternar" onclick="alternarModoLogin()" id="link-alternar">Ainda não tem conta? Criar conta</div>
+  </div>
+
+  <!-- RESUMO -->
+  <div class="screen" id="tela-resumo">
+    <div class="header">
+      <h1>Resumo do mês</h1>
+      <span class="sair" onclick="sair()">Sair</span>
+    </div>
+
+    <div class="card-total">
+      <div class="rotulo">Total gasto</div>
+      <div class="valor" id="total-mes">R$ 0,00</div>
+    </div>
+
+    <div class="card" id="card-categorias">
+      <h3>Por categoria</h3>
+      <div id="conteudo-categorias" class="vazio">Nenhum gasto lançado ainda. Toque em "+ Novo gasto".</div>
+    </div>
+
+    <div class="card">
+      <h3>Últimos lançamentos</h3>
+      <div id="lista-gastos-recentes" class="vazio">Nenhum gasto lançado ainda.</div>
+    </div>
+
+    <div class="card">
+      <h3>Metas de economia</h3>
+      <div id="lista-metas-resumo" class="vazio">Nenhuma meta cadastrada.</div>
+    </div>
+
+    <button class="btn-flutuante" onclick="abrirModal('modal-gasto')">+ Novo gasto</button>
+  </div>
+
+  <!-- DIVIDAS -->
+  <div class="screen" id="tela-dividas">
+    <div class="header">
+      <h1>Dívidas e parcelas</h1>
+      <span class="adicionar" onclick="abrirModal('modal-divida')">+ Nova</span>
+    </div>
+    <div id="lista-dividas" class="vazio">Nenhuma dívida cadastrada.</div>
+  </div>
+
+  <!-- METAS -->
+  <div class="screen" id="tela-metas">
+    <div class="header">
+      <h1>Metas de economia</h1>
+      <span class="adicionar" onclick="abrirModal('modal-meta')">+ Nova</span>
+    </div>
+    <div id="lista-metas" class="vazio">Nenhuma meta cadastrada.</div>
+  </div>
+
+  <!-- TABBAR -->
+  <div class="tabbar" id="tabbar" style="display:none;">
+    <div class="tab active" data-tela="tela-resumo" onclick="irPara('tela-resumo', this)">
+      <span class="icone">📒</span>Resumo
+    </div>
+    <div class="tab" data-tela="tela-dividas" onclick="irPara('tela-dividas', this)">
+      <span class="icone">📄</span>Dívidas
+    </div>
+    <div class="tab" data-tela="tela-metas" onclick="irPara('tela-metas', this)">
+      <span class="icone">🎯</span>Metas
+    </div>
+  </div>
+
+  <!-- MODAL: NOVO GASTO -->
+  <div class="modal-fundo" id="modal-gasto">
+    <div class="modal-cartao">
+      <h3>Novo gasto</h3>
+      <div class="campo">
+        <label>Descrição</label>
+        <input type="text" id="gasto-descricao" placeholder="Ex: Supermercado">
+      </div>
+      <div class="campo">
+        <label>Valor (R$)</label>
+        <input type="text" id="gasto-valor" placeholder="0,00" inputmode="decimal">
+      </div>
+      <div class="campo">
+        <label>Categoria</label>
+        <select id="gasto-categoria">
+          <option>Moradia</option>
+          <option>Alimentação</option>
+          <option>Transporte</option>
+          <option>Contas fixas</option>
+          <option>Cartão de crédito</option>
+          <option>Lazer</option>
+          <option>Saúde</option>
+          <option>Outros</option>
+        </select>
+      </div>
+      <button class="modal-salvar" onclick="salvarGasto()">Salvar gasto</button>
+      <div class="modal-cancelar" onclick="fecharModal('modal-gasto')">Cancelar</div>
+    </div>
+  </div>
+
+  <!-- MODAL: NOVA DIVIDA -->
+  <div class="modal-fundo" id="modal-divida">
+    <div class="modal-cartao">
+      <h3>Nova dívida</h3>
+      <div class="campo">
+        <label>Nome</label>
+        <input type="text" id="divida-nome" placeholder="Ex: Fatura Nubank">
+      </div>
+      <div class="campo">
+        <label>Valor total (R$)</label>
+        <input type="text" id="divida-valor" placeholder="0,00" inputmode="decimal">
+      </div>
+      <div class="campo">
+        <label>Número de parcelas</label>
+        <input type="text" id="divida-parcelas" placeholder="Ex: 3" inputmode="numeric">
+      </div>
+      <button class="modal-salvar" onclick="salvarDivida()">Salvar</button>
+      <div class="modal-cancelar" onclick="fecharModal('modal-divida')">Cancelar</div>
+    </div>
+  </div>
+
+  <!-- MODAL: NOVA META -->
+  <div class="modal-fundo" id="modal-meta">
+    <div class="modal-cartao">
+      <h3>Nova meta</h3>
+      <div class="campo">
+        <label>Nome</label>
+        <input type="text" id="meta-nome" placeholder="Ex: Reserva de emergência">
+      </div>
+      <div class="campo">
+        <label>Valor alvo (R$)</label>
+        <input type="text" id="meta-valor" placeholder="0,00" inputmode="decimal">
+      </div>
+      <button class="modal-salvar" onclick="salvarMeta()">Salvar</button>
+      <div class="modal-cancelar" onclick="fecharModal('modal-meta')">Cancelar</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ======================================================
+// Conexão com o Supabase (já configurada para o seu projeto "meu-razao")
+// ======================================================
+const SUPABASE_URL = "https://lcuaphodobwotxplcskn.supabase.co";
+const SUPABASE_KEY = "sb_publishable_30RHQ3b_M9lS0rsUb8DXzA_wY435XUk";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let gastos = [];
+let dividas = [];
+let metas = [];
+let modoCadastro = false;
+
+function formatarReal(v) {
+  return Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+function escaparHtml(valor) {
+  return String(valor ?? '').replace(/[&<>'"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[c]));
+}
+
+function valorMonetario(texto) {
+  const valor = String(texto || '').trim().replace(/R\$|\s/g, '');
+  const numero = valor.includes(',') ? Number(valor.replace(/\./g, '').replace(',', '.')) : Number(valor);
+  return Number.isFinite(numero) && numero > 0 ? numero : 0;
+}
+
+function informarErro(erro, acao) {
+  if (!erro) return false;
+  console.error(erro);
+  alert('Não foi possível ' + acao + '. Tente novamente.');
+  return true;
+}
+
+// ---------- AUTENTICAÇÃO ----------
+function alternarModoLogin() {
+  modoCadastro = !modoCadastro;
+  document.getElementById('btn-login').textContent = modoCadastro ? 'Criar conta' : 'Entrar';
+  document.getElementById('link-alternar').textContent = modoCadastro ? 'Já tenho conta' : 'Ainda não tem conta? Criar conta';
+  document.getElementById('login-erro').textContent = '';
+}
+
+async function entrar() {
+  const email = document.getElementById('login-email').value.trim();
+  const senha = document.getElementById('login-senha').value;
+  const erroEl = document.getElementById('login-erro');
+  erroEl.textContent = '';
+  if (!email || senha.length < 6) {
+    erroEl.textContent = 'Preencha um e-mail válido e senha com 6+ caracteres.';
+    return;
+  }
+
+  const { error } = modoCadastro
+    ? await sb.auth.signUp({ email, password: senha })
+    : await sb.auth.signInWithPassword({ email, password: senha });
+
+  if (error) {
+    erroEl.textContent = traduzErro(error.message);
+  } else if (modoCadastro) {
+    erroEl.style.color = 'var(--credit)';
+    erroEl.textContent = 'Conta criada! Você já está logado.';
+  }
+}
+
+function traduzErro(msg) {
+  if (msg.includes('Invalid login credentials')) return 'E-mail ou senha incorretos.';
+  if (msg.includes('User already registered')) return 'Este e-mail já tem uma conta — tente entrar.';
+  if (msg.includes('Password should be at least')) return 'Senha muito curta (mínimo 6 caracteres).';
+  if (msg.includes('Unable to validate email')) return 'E-mail inválido.';
+  return 'Algo deu errado: ' + msg;
+}
+
+async function sair() {
+  await sb.auth.signOut();
+}
+
+sb.auth.onAuthStateChange((event, session) => {
+  document.getElementById('carregando').style.display = 'none';
+  if (session) {
+    mostrarApp();
+  } else {
+    mostrarLogin();
+  }
+});
+
+function mostrarLogin() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('tela-login').classList.add('active');
+  document.getElementById('tabbar').style.display = 'none';
+}
+
+async function mostrarApp() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('tela-resumo').classList.add('active');
+  document.getElementById('tabbar').style.display = 'flex';
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelector('.tab[data-tela="tela-resumo"]').classList.add('active');
+  await carregarTudo();
+}
+
+async function carregarTudo() {
+  const [resGastos, resDividas, resMetas] = await Promise.all([
+    sb.from('gastos').select('*').order('data', { ascending: false }),
+    sb.from('dividas').select('*'),
+    sb.from('metas').select('*')
+  ]);
+  if (informarErro(resGastos.error, 'carregar os gastos') || informarErro(resDividas.error, 'carregar as dívidas') || informarErro(resMetas.error, 'carregar as metas')) return;
+  gastos = resGastos.data || [];
+  dividas = resDividas.data || [];
+  metas = resMetas.data || [];
+  renderResumo();
+  renderDividas();
+  renderMetas();
+}
+
+// ---------- NAVEGAÇÃO ----------
+function irPara(idTela, elTab) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(idTela).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  elTab.classList.add('active');
+}
+function abrirModal(id) { document.getElementById(id).classList.add('aberto'); }
+function fecharModal(id) { document.getElementById(id).classList.remove('aberto'); }
+
+// ---------- GASTOS ----------
+async function salvarGasto() {
+  const descricao = document.getElementById('gasto-descricao').value.trim();
+  const valor = valorMonetario(document.getElementById('gasto-valor').value);
+  const categoria = document.getElementById('gasto-categoria').value;
+  if (!descricao || !valor) { alert('Preencha a descrição e um valor válido.'); return; }
+  const { error } = await sb.from('gastos').insert({ descricao, valor, categoria });
+  if (informarErro(error, 'salvar o gasto')) return;
+  document.getElementById('gasto-descricao').value = '';
+  document.getElementById('gasto-valor').value = '';
+  fecharModal('modal-gasto');
+  carregarTudo();
+}
+
+function renderResumo() {
+  const total = gastos.reduce((s, g) => s + Number(g.valor), 0);
+  document.getElementById('total-mes').textContent = formatarReal(total);
+
+  const porCategoria = {};
+  gastos.forEach(g => { porCategoria[g.categoria] = (porCategoria[g.categoria] || 0) + Number(g.valor); });
+  const categorias = Object.entries(porCategoria);
+  const CORES = ['#B23A3A','#B08D57','#3F6B4A','#4B5670','#8C6D3F','#6B8F71','#A85C5C','#5C6E8C'];
+
+  const cont = document.getElementById('conteudo-categorias');
+  if (categorias.length === 0) {
+    cont.innerHTML = '<div class="vazio">Nenhum gasto lançado ainda. Toque em "+ Novo gasto".</div>';
+  } else {
+    let html = '<div>';
+    categorias.forEach(([nome, valor], i) => {
+      const pct = Math.round((valor / total) * 100);
+      html += `<div class="legend-item"><span class="dot" style="background:${CORES[i % CORES.length]}"></span>${nome} — ${formatarReal(valor)} (${pct}%)</div>`;
+    });
+    html += '</div>';
+    cont.innerHTML = html;
+  }
+
+  const listaGastos = document.getElementById('lista-gastos-recentes');
+  if (gastos.length === 0) {
+    listaGastos.innerHTML = '<div class="vazio">Nenhum gasto lançado ainda.</div>';
+  } else {
+    listaGastos.innerHTML = gastos.slice(0, 6).map(g => `<div class="gasto-row">
+      <div class="gasto-info"><div class="gasto-desc">${escaparHtml(g.descricao)}</div><div class="gasto-meta">${escaparHtml(g.categoria || 'Outros')}</div></div>
+      <div style="display:flex;align-items:center;gap:5px"><span class="gasto-valor">${formatarReal(g.valor)}</span><button class="btn-excluir" title="Excluir gasto" aria-label="Excluir gasto" onclick="excluirGasto('${g.id}')">×</button></div>
+    </div>`).join('');
+  }
+
+  const listaMetasResumo = document.getElementById('lista-metas-resumo');
+  if (metas.length === 0) {
+    listaMetasResumo.innerHTML = '<div class="vazio">Nenhuma meta cadastrada.</div>';
+  } else {
+    listaMetasResumo.innerHTML = metas.map(m => {
+      const progresso = Math.min((Number(m.valor_atual) || 0) / Number(m.valor_alvo), 1);
+      return `<div class="meta-row">
+        <div class="linha-entre"><span class="nome">${escaparHtml(m.nome)}</span><span class="detalhe">${formatarReal(m.valor_atual)} / ${formatarReal(m.valor_alvo)}</span></div>
+        <div class="trilha"><div class="progresso" style="width:${progresso*100}%"></div></div>
+      </div>`;
+    }).join('');
+  }
+}
+
+async function excluirGasto(id) {
+  if (!confirm('Excluir este gasto? Esta ação não pode ser desfeita.')) return;
+  const { error } = await sb.from('gastos').delete().eq('id', id);
+  if (informarErro(error, 'excluir o gasto')) return;
+  carregarTudo();
+}
+
+// ---------- DIVIDAS ----------
+async function salvarDivida() {
+  const nome = document.getElementById('divida-nome').value.trim();
+  const valor_total = valorMonetario(document.getElementById('divida-valor').value);
+  const parcelas_total = Number(document.getElementById('divida-parcelas').value) || 1;
+  if (!nome || !valor_total) { alert('Preencha o nome e o valor.'); return; }
+  const { error } = await sb.from('dividas').insert({ nome, valor_total, parcelas_total, parcelas_pagas: 0 });
+  if (informarErro(error, 'salvar a dívida')) return;
+  document.getElementById('divida-nome').value = '';
+  document.getElementById('divida-valor').value = '';
+  document.getElementById('divida-parcelas').value = '';
+  fecharModal('modal-divida');
+  carregarTudo();
+}
+
+async function pagarParcela(id) {
+  const d = dividas.find(x => x.id === id);
+  if (!d || d.parcelas_pagas >= d.parcelas_total) return;
+  const { error } = await sb.from('dividas').update({ parcelas_pagas: d.parcelas_pagas + 1 }).eq('id', id);
+  if (informarErro(error, 'atualizar a dívida')) return;
+  carregarTudo();
+}
+
+function renderDividas() {
+  const lista = document.getElementById('lista-dividas');
+  if (dividas.length === 0) {
+    lista.innerHTML = '<div class="vazio">Nenhuma dívida cadastrada.</div>';
+    return;
+  }
+  lista.innerHTML = dividas.map(d => {
+    const valorParcela = d.valor_total / d.parcelas_total;
+    const quitada = d.parcelas_pagas >= d.parcelas_total;
+    return `<div class="card divida-row">
+      <div class="linha-entre">
+        <span class="nome">${escaparHtml(d.nome)}</span>
+        <span class="status ${quitada ? 'quitada' : 'pendente'}">${quitada ? 'Quitada' : d.parcelas_pagas + '/' + d.parcelas_total}</span>
+      </div>
+      <div class="detalhe">${formatarReal(valorParcela)} por parcela · total ${formatarReal(d.valor_total)}</div>
+      <div class="trilha"><div class="progresso brass" style="width:${(d.parcelas_pagas/d.parcelas_total)*100}%"></div></div>
+      ${!quitada ? `<span class="link-acao" onclick="pagarParcela('${d.id}')">Marcar parcela como paga</span>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// ---------- METAS ----------
+async function salvarMeta() {
+  const nome = document.getElementById('meta-nome').value.trim();
+  const valor_alvo = valorMonetario(document.getElementById('meta-valor').value);
+  if (!nome || !valor_alvo) { alert('Preencha o nome e o valor da meta.'); return; }
+  const { error } = await sb.from('metas').insert({ nome, valor_alvo, valor_atual: 0 });
+  if (informarErro(error, 'salvar a meta')) return;
+  document.getElementById('meta-nome').value = '';
+  document.getElementById('meta-valor').value = '';
+  fecharModal('modal-meta');
+  carregarTudo();
+}
+
+async function aportar(id) {
+  const valorTexto = prompt('Quanto você quer guardar nesta meta? (R$)');
+  const valor = valorMonetario(valorTexto);
+  if (!valor) return;
+  const m = metas.find(x => x.id === id);
+  if (!m) return;
+  const { error } = await sb.from('metas').update({ valor_atual: Number(m.valor_atual) + valor }).eq('id', id);
+  if (informarErro(error, 'registrar o aporte')) return;
+  carregarTudo();
+}
+
+function renderMetas() {
+  const lista = document.getElementById('lista-metas');
+  if (metas.length === 0) {
+    lista.innerHTML = '<div class="vazio">Nenhuma meta cadastrada.</div>';
+    return;
+  }
+  lista.innerHTML = metas.map(m => {
+    const progresso = Math.min((Number(m.valor_atual) || 0) / Number(m.valor_alvo), 1);
+    const atingida = progresso >= 1;
+    return `<div class="card meta-row">
+      <div class="linha-entre">
+        <span class="nome">${escaparHtml(m.nome)}</span>
+        <span class="status ${atingida ? 'quitada' : 'pendente'}">${atingida ? 'Atingida' : Math.round(progresso*100) + '%'}</span>
+      </div>
+      <div class="detalhe">${formatarReal(m.valor_atual)} de ${formatarReal(m.valor_alvo)}</div>
+      <div class="trilha"><div class="progresso" style="width:${progresso*100}%"></div></div>
+      ${!atingida ? `<span class="link-acao" onclick="aportar('${m.id}')">Guardar dinheiro nesta meta</span>` : ''}
+    </div>`;
+  }).join('');
+}
+</script>
+
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js').catch(console.error);
+  });
+}
+</script>
+
+</body>
+</html>
+
