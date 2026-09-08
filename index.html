@@ -47,6 +47,17 @@ body{margin:0;font-family:var(--sans);background:#D9D2C0;display:flex;justify-co
 .balance-figure{text-align:center;margin-top:4px}
 .balance-figure .cap{font-size:12px;opacity:.65;margin-bottom:4px}
 .balance-figure .num{font-family:var(--serif);font-weight:600;font-size:36px;line-height:1}
+.mini-stats{display:flex;justify-content:center;gap:28px;margin-top:14px}
+.mini-stats div{text-align:center}
+.mini-stats span{display:block;font-size:10.5px;opacity:.65;margin-bottom:2px}
+.mini-stats b{font-size:14px;font-weight:600}
+
+.conta-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.conta-row:last-child{border-bottom:0}
+.conta-info{min-width:0}
+.conta-nome{font-size:13.5px;font-weight:600}
+.conta-tipo{color:var(--ink-soft);font-size:11.5px;margin-top:2px}
+.conta-saldo{font-size:13.5px;font-weight:700;white-space:nowrap}
 
 .content{padding:20px 18px 6px}
 .section-title{font-family:var(--serif);font-size:17px;font-weight:600;margin:0 0 12px;display:flex;align-items:center;justify-content:space-between}
@@ -156,8 +167,12 @@ body{margin:0;font-family:var(--sans);background:#D9D2C0;display:flex;justify-co
       <button class="icon-btn" id="perfil-mini" onclick="abrirPopupPerfil()">MP</button>
     </div>
     <div class="balance-figure">
-      <div class="cap">Total gasto no mês</div>
-      <div class="num tabular" id="total-mes">R$ 0,00</div>
+      <div class="cap">Patrimônio líquido</div>
+      <div class="num tabular" id="patrimonio-liquido">R$ 0,00</div>
+    </div>
+    <div class="mini-stats">
+      <div><span>Em contas</span><b class="tabular" id="total-contas">R$ 0,00</b></div>
+      <div><span>Gasto no mês</span><b class="tabular" id="total-mes">R$ 0,00</b></div>
     </div>
   </div>
   <div class="content">
@@ -175,6 +190,13 @@ body{margin:0;font-family:var(--sans);background:#D9D2C0;display:flex;justify-co
 
     <div class="section-title">Metas de economia</div>
     <div class="card" id="lista-metas-resumo"></div>
+  </div>
+</div>
+
+<div class="screen" id="tela-contas">
+  <div class="content">
+    <div class="section-title">Minhas contas<button class="adicionar" onclick="abrirModal('modal-conta')">+ Nova</button></div>
+    <div class="card" id="lista-contas"></div>
   </div>
 </div>
 
@@ -201,6 +223,7 @@ body{margin:0;font-family:var(--sans);background:#D9D2C0;display:flex;justify-co
 
 <div class="tabbar" id="tabbar" style="display:none">
   <div class="tab active" data-tela="tela-resumo" onclick="irPara('tela-resumo',this)"><span class="icone">📒</span>Resumo</div>
+  <div class="tab" data-tela="tela-contas" onclick="irPara('tela-contas',this)"><span class="icone">🏦</span>Contas</div>
   <div class="tab" data-tela="tela-dividas" onclick="irPara('tela-dividas',this)"><span class="icone">📄</span>Dívidas</div>
   <div class="tab" data-tela="tela-metas" onclick="irPara('tela-metas',this)"><span class="icone">🎯</span>Metas</div>
   <div class="tab" data-tela="tela-cartoes" onclick="irPara('tela-cartoes',this)"><span class="icone">💳</span>Cartões</div>
@@ -227,6 +250,24 @@ body{margin:0;font-family:var(--sans);background:#D9D2C0;display:flex;justify-co
     </div>
     <button class="modal-salvar" onclick="salvarGasto()">Salvar gasto</button>
     <div class="modal-cancelar" onclick="fecharModal('modal-gasto')">Cancelar</div>
+  </div>
+</div>
+
+<div class="modal-fundo" id="modal-conta">
+  <div class="modal-cartao">
+    <h3>Nova conta</h3>
+    <div class="campo"><label>Instituição</label><input type="text" id="conta-instituicao" placeholder="Ex: Nubank, Itaú, Caixa"></div>
+    <div class="campo"><label>Tipo</label>
+      <select id="conta-tipo">
+        <option value="corrente">Conta corrente</option>
+        <option value="poupanca">Poupança</option>
+        <option value="investimento">Investimento</option>
+        <option value="carteira_digital">Carteira digital</option>
+      </select>
+    </div>
+    <div class="campo"><label>Saldo atual (R$)</label><input type="text" id="conta-saldo" placeholder="0,00" inputmode="decimal"></div>
+    <button class="modal-salvar" onclick="salvarConta()">Salvar conta</button>
+    <div class="modal-cancelar" onclick="fecharModal('modal-conta')">Cancelar</div>
   </div>
 </div>
 
@@ -284,7 +325,8 @@ body{margin:0;font-family:var(--sans);background:#D9D2C0;display:flex;justify-co
 </div>
 <script>
 const SUPABASE_URL="https://lcuaphodobwotxplcskn.supabase.co",SUPABASE_KEY="sb_publishable_30RHQ3b_M9lS0rsUb8DXzA_wY435XUk",sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-let gastos=[],dividas=[],metas=[],cartoes=[],modoCadastro=false,usuarioAtual=null,catChartInst=null,trendChartInst=null;
+let gastos=[],dividas=[],metas=[],cartoes=[],contas=[],modoCadastro=false,usuarioAtual=null,catChartInst=null,trendChartInst=null;
+const TIPOS_CONTA={corrente:'Conta corrente',poupanca:'Poupança',investimento:'Investimento',carteira_digital:'Carteira digital'};
 const CORES=['#A8462F','#B08A3E','#3F6B52','#5B6473','#7A3B3B','#8C6BAF','#2E7D6B','#3B6FA0'];
 const MESES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
 
@@ -311,10 +353,10 @@ async function mostrarApp(){
   await carregarTudo();
 }
 async function carregarTudo(){
-  const[a,b,c,d]=await Promise.all([sb.from('gastos').select('*').order('data',{ascending:false}),sb.from('dividas').select('*'),sb.from('metas').select('*'),sb.from('cartoes').select('*,compras:compras_cartao(*)').order('created_at',{ascending:true})]);
-  if(informarErro(a.error,'carregar os gastos')||informarErro(b.error,'carregar as dívidas')||informarErro(c.error,'carregar as metas')||informarErro(d.error,'carregar os cartões'))return;
-  gastos=a.data||[];dividas=b.data||[];metas=c.data||[];cartoes=d.data||[];
-  renderResumo();renderDividas();renderMetas();renderCartoes();
+  const[a,b,c,d,e]=await Promise.all([sb.from('gastos').select('*').order('data',{ascending:false}),sb.from('dividas').select('*'),sb.from('metas').select('*'),sb.from('cartoes').select('*,compras:compras_cartao(*)').order('created_at',{ascending:true}),sb.from('contas').select('*').order('created_at',{ascending:true})]);
+  if(informarErro(a.error,'carregar os gastos')||informarErro(b.error,'carregar as dívidas')||informarErro(c.error,'carregar as metas')||informarErro(d.error,'carregar os cartões')||informarErro(e.error,'carregar as contas'))return;
+  gastos=a.data||[];dividas=b.data||[];metas=c.data||[];cartoes=d.data||[];contas=e.data||[];
+  renderResumo();renderDividas();renderMetas();renderCartoes();renderContas();
 }
 function irPara(id,tab){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));tab.classList.add('active')}
 function abrirModal(id){document.getElementById(id).classList.add('aberto')}
@@ -340,6 +382,11 @@ async function excluirGasto(id){if(!confirm('Excluir este gasto? Esta ação nã
 function renderResumo(){
   const total=gastos.reduce((s,g)=>s+Number(g.valor),0);
   document.getElementById('total-mes').textContent=formatarReal(total);
+
+  const totalContas=contas.reduce((s,c)=>s+Number(c.saldo_atual),0);
+  const totalFaturasAbertas=cartoes.reduce((s,c)=>s+(c.compras||[]).reduce((s2,x)=>s2+Number(x.valor),0),0);
+  document.getElementById('total-contas').textContent=formatarReal(totalContas);
+  document.getElementById('patrimonio-liquido').textContent=formatarReal(totalContas-totalFaturasAbertas);
 
   const pc={};
   gastos.forEach(g=>{const cat=g.categoria||'Outros';pc[cat]=(pc[cat]||0)+Number(g.valor)});
@@ -390,6 +437,9 @@ async function salvarCartao(){const nome=document.getElementById('cartao-nome').
 async function novaCompraCartao(id){const nome=prompt('Descrição da compra:');if(!nome)return;const v=valorMonetario(prompt('Valor total da compra (R$):',''));if(!v)return;const parcelas=Math.max(1,parseInt(prompt('Número de parcelas (1 para compra à vista):','1'))||1);const{error}=await sb.from('compras_cartao').insert({cartao_id:id,nome,valor:v,parcelas,atual:1});if(informarErro(error,'salvar a compra'))return;carregarTudo()}
 async function excluirCartao(id){if(!confirm('Excluir este cartão? As compras lançadas nele também serão removidas.'))return;const{error}=await sb.from('cartoes').delete().eq('id',id);if(informarErro(error,'excluir o cartão'))return;carregarTudo()}
 function renderCartoes(){const box=document.getElementById('lista-cartoes');if(!box)return;const a=cartoes;if(!a.length){box.innerHTML='<div class="card"><div class="vazio">Nenhum cartão cadastrado. Toque em "+ Novo".</div></div>';return}box.innerHTML=a.map(c=>{const usado=c.compras.reduce((s,x)=>s+x.valor,0),disp=Math.max(0,c.limite-usado);return`<div class="cartao-visual"><div class="cartao-topo"><div><div class="cartao-nome">${escaparHtml(c.nome)}</div><div class="cartao-banco">${escaparHtml(c.banco||'Cartão de crédito')}</div></div><span>💳</span></div><div class="cartao-limite"><small>Limite total</small><strong class="tabular">${formatarReal(c.limite)}</strong></div><div class="cartao-info"><div><small>Utilizado</small><b class="tabular">${formatarReal(usado)}</b></div><div><small>Disponível</small><b class="tabular">${formatarReal(disp)}</b></div></div></div><div class="card"><h3 style="margin:0 0 10px;font-family:var(--serif);font-size:14.5px">Compras</h3>${c.compras.length?c.compras.map(x=>`<div class="compra-row"><div><b>${escaparHtml(x.nome)}</b>${x.parcelas>1?`<span class="parcelas-tag">${x.atual}/${x.parcelas} parcelas</span>`:'<small>À vista</small>'}</div><strong class="tabular">${formatarReal(x.valor)}</strong></div>`).join(''):'<div class="vazio">Nenhuma compra cadastrada.</div>'}<div class="cartao-acoes"><button onclick="novaCompraCartao('${c.id}')">+ Compra</button><button onclick="excluirCartao('${c.id}')">Excluir</button></div></div>`}).join('')}
+async function salvarConta(){const instituicao=document.getElementById('conta-instituicao').value.trim(),tipo=document.getElementById('conta-tipo').value,saldo_atual=valorMonetario(document.getElementById('conta-saldo').value);if(!instituicao){alert('Informe a instituição.');return}const{error}=await sb.from('contas').insert({instituicao,tipo,saldo_atual});if(informarErro(error,'salvar a conta'))return;document.getElementById('conta-instituicao').value='';document.getElementById('conta-saldo').value='';fecharModal('modal-conta');carregarTudo()}
+async function excluirConta(id){if(!confirm('Excluir esta conta?'))return;const{error}=await sb.from('contas').delete().eq('id',id);if(informarErro(error,'excluir a conta'))return;carregarTudo()}
+function renderContas(){const l=document.getElementById('lista-contas');if(!l)return;if(!contas.length){l.innerHTML='<div class="vazio">Nenhuma conta cadastrada. Toque em "+ Nova".</div>';return}l.innerHTML=contas.map(c=>`<div class="conta-row"><div class="conta-info"><div class="conta-nome">${escaparHtml(c.instituicao)}</div><div class="conta-tipo">${TIPOS_CONTA[c.tipo]||c.tipo}</div></div><div style="display:flex;align-items:center;gap:5px"><span class="conta-saldo tabular">${formatarReal(c.saldo_atual)}</span><button class="btn-excluir" onclick="excluirConta('${c.id}')">✕</button></div></div>`).join('')}
 </script>
 <script>if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(console.error));</script>
 </body>
