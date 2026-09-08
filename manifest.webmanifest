@@ -1,11 +1,11 @@
 {
-  "name": "Meu Financeiro",
-  "short_name": "Financeiro",
+  "name": "Gestão de Gastos",
+  "short_name": "Gastos",
   "description": "Controle pessoal de gastos, dívidas e metas financeiras.",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#F4EFE1",
-  "theme_color": "#1F2A44",
+  "background_color": "#F6F3EC",
+  "theme_color": "#14213A",
   "icons": [
     {
       "src": "icon-192.png",
