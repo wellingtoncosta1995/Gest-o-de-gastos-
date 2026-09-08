@@ -1,31 +1,76 @@
-/* Camada visual segura: mantém a estrutura original e melhora apenas o acabamento. */
-:root{--ui-radius:24px;--ui-radius-sm:18px;--ui-shadow:0 12px 28px rgba(0,0,0,.08)}
-body{padding:0!important;background:var(--paper)!important;min-height:100vh}
-.phone{width:100%!important;max-width:760px!important;min-height:100vh!important;border-radius:0!important;box-shadow:none!important;background:var(--paper)!important}
-.screen{padding-bottom:112px!important}
-.top-header{margin:0 12px;padding:22px 18px 26px!important;border-radius:0 0 var(--ui-radius) var(--ui-radius)!important;box-shadow:var(--ui-shadow)}
-.top-row{margin-bottom:14px!important}.brand{font-size:18px!important}
-.icon-btn{width:42px!important;height:42px!important;border-radius:50%!important;border:1px solid rgba(255,255,255,.20)!important;background:rgba(255,255,255,.10)!important}
-.icon-btn img{width:100%;height:100%;object-fit:cover}
-.balance-figure{text-align:left!important;margin-top:8px!important}.balance-figure .num{font-size:32px!important}
-.mini-stats{justify-content:flex-start!important;gap:12px!important;margin-top:16px!important}
-.mini-stats div{flex:1;text-align:left!important;padding:11px 12px!important;border-radius:16px!important;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.14)}
-.content{padding:22px 16px 10px!important}.section-title{font-family:var(--sans)!important;font-size:19px!important;margin:14px 2px 12px!important}
-.card{border-radius:var(--ui-radius)!important;padding:18px!important;margin-bottom:16px!important;border:1px solid var(--line)!important;box-shadow:0 6px 20px rgba(0,0,0,.04)!important}
-.chart-wrap{height:220px!important}.carrossel-cartoes{gap:14px!important;padding:4px 2px 10px!important}.chip-cartao{width:178px!important;border-radius:22px!important;padding:16px!important;box-shadow:var(--ui-shadow)}
-.cartao-visual{min-height:190px!important;border-radius:24px!important;padding:20px!important}.cartao-acoes button{min-height:44px;border-radius:14px!important}
-.conta-row,.gasto-row,.assinatura-row{border-radius:18px!important;margin-bottom:8px!important;border:1px solid var(--line)!important;background:var(--card)!important}.swipe-inner{padding:14px!important;border-radius:18px!important}
-.kpi{border-radius:18px!important;padding:14px!important}.btn-flutuante{min-height:54px;border-radius:18px!important}.fab-add{width:52px!important;height:52px!important;right:18px!important;bottom:-24px!important;border-radius:18px!important;font-size:24px!important}
-.tabbar{position:fixed!important;left:50%!important;transform:translateX(-50%)!important;bottom:max(10px, env(safe-area-inset-bottom))!important;width:calc(100% - 28px)!important;max-width:720px!important;border:1px solid var(--line)!important;border-radius:26px!important;padding:8px!important;box-shadow:0 14px 32px rgba(0,0,0,.16)!important;background:var(--card)!important;z-index:999}
-.tab{border-radius:18px!important;padding:10px 5px!important;min-height:56px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:6px!important}.tab.active{background:var(--sage-soft)!important}.tab .icone{font-size:20px!important;display:flex;align-items:center;justify-content:center}.tab .icone svg{width:23px;height:23px;display:block}
-.modal-fundo{width:100%!important;max-width:760px!important;left:50%!important;margin-left:0!important;transform:translateX(-50%)}.modal{border-radius:28px 28px 0 0!important}
-input,select,textarea{border-radius:16px!important;min-height:48px}
-/* Card principal: compacto e sem sombra ou círculo interno. */
-.compact-management-card{min-height:0!important;overflow:visible!important;box-shadow:var(--ui-shadow)!important}
-.compact-management-card::before,.compact-management-card::after{display:none!important;content:none!important}
-/* Perfil acima do card, à esquerda. */
-.top-header:has(.icon-btn img){margin-top:58px!important;overflow:visible!important}.top-header .icon-btn:has(img){position:absolute!important;top:-54px!important;left:2px!important;width:52px!important;height:52px!important;border-radius:50%!important;overflow:hidden!important;background:var(--card)!important;border:3px solid var(--paper)!important;box-shadow:0 8px 18px rgba(0,0,0,.14)!important;z-index:10!important}
-/* Orçamento: clean, sem efeitos que deslocam a página. */
-.budget-modern-card{border-radius:26px!important;padding:20px!important;box-shadow:0 8px 24px rgba(0,0,0,.05)!important;overflow:hidden!important}.budget-modern-card::before,.budget-modern-card::after{display:none!important;content:none!important}.budget-modern-card .chart-wrap{height:230px!important;margin-top:8px!important}.budget-modern-card canvas,.budget-modern-card svg{touch-action:pan-y}
-@media(max-width:480px){.content{padding-left:14px!important;padding-right:14px!important}.top-header{margin:0 10px}.balance-figure .num{font-size:29px!important}.budget-modern-card .chart-wrap{height:210px!important}}
-@media(min-width:761px){body{background:var(--surround)!important;padding:24px 0!important}.phone{max-width:430px!important;min-height:900px!important;border-radius:32px!important;box-shadow:0 24px 60px rgba(0,0,0,.22)!important}.tabbar{max-width:400px!important}}
+/* Meu Financeiro v25 — nova identidade visual clara, sem alterar funcionalidades. */
+:root{
+  --paper:#F4F7F5!important;
+  --card:#FFFFFF!important;
+  --ink:#17352F!important;
+  --ink-soft:#62736E!important;
+  --line:#D8E4DE!important;
+  --sage:#2F7A68!important;
+  --sage-soft:#E2F1EB!important;
+  --surround:#EAF0ED!important;
+  --ui-radius:26px;
+  --ui-radius-sm:18px;
+}
+@media(prefers-color-scheme:dark){
+  :root{--paper:#F4F7F5!important;--card:#FFFFFF!important;--ink:#17352F!important;--ink-soft:#62736E!important;--line:#D8E4DE!important;--sage:#2F7A68!important;--sage-soft:#E2F1EB!important;--surround:#EAF0ED!important}
+}
+body{background:var(--surround)!important;color:var(--ink)!important;padding:0!important}
+.phone{width:100%!important;max-width:760px!important;min-height:100vh!important;background:var(--paper)!important;border-radius:0!important;box-shadow:none!important}
+.screen{padding-bottom:118px!important}
+/* Marca no cabeçalho */
+.app-brand{display:flex!important;align-items:center!important;gap:11px!important;padding:calc(16px + env(safe-area-inset-top)) 20px 10px!important;background:var(--paper)!important;color:var(--ink)!important}
+.app-brand svg{width:44px!important;height:44px!important;flex:none!important}
+.app-brand .brand-copy{display:flex!important;flex-direction:column!important;line-height:1!important}
+.app-brand .brand-copy b{font-size:17px!important;letter-spacing:.03em!important}
+.app-brand .brand-copy span{font-size:10px!important;font-weight:700!important;letter-spacing:.14em!important;color:var(--sage)!important;margin-top:4px!important}
+/* Perfil mais profissional */
+.top-header{margin:0 16px!important;padding:20px 20px 24px!important;background:linear-gradient(135deg,#E2F1EB 0%,#CFE7DE 100%)!important;color:var(--ink)!important;border:1px solid #C8DDD4!important;border-radius:var(--ui-radius)!important;box-shadow:0 10px 28px rgba(34,73,61,.08)!important;overflow:visible!important;min-height:0!important}
+.top-row{margin-bottom:10px!important}
+.brand{font-size:15px!important;font-family:var(--sans)!important;font-weight:700!important;letter-spacing:.02em!important}
+.icon-btn{width:54px!important;height:54px!important;border-radius:50%!important;background:#fff!important;border:3px solid var(--paper)!important;color:var(--ink)!important;box-shadow:0 8px 20px rgba(25,60,49,.14)!important;overflow:hidden!important}
+.icon-btn img{width:100%!important;height:100%!important;object-fit:cover!important}
+.balance-figure{text-align:left!important;margin-top:10px!important}
+.balance-figure .cap{color:var(--ink-soft)!important;opacity:1!important;font-size:12px!important}
+.balance-figure .num{color:var(--ink)!important;font-size:34px!important}
+.mini-stats{justify-content:flex-start!important;gap:10px!important;margin-top:16px!important}
+.mini-stats div{flex:1!important;text-align:left!important;padding:12px 14px!important;background:rgba(255,255,255,.62)!important;border:1px solid rgba(47,122,104,.18)!important;border-radius:18px!important}
+.mini-stats span{color:var(--ink-soft)!important;opacity:1!important}
+.mini-stats b{color:var(--ink)!important}
+.fab-add{width:52px!important;height:52px!important;right:18px!important;bottom:-24px!important;border-radius:18px!important;background:#17352F!important;color:#fff!important;box-shadow:0 12px 24px rgba(23,53,47,.18)!important}
+/* Conteúdo e cards */
+.content{padding:26px 16px 12px!important;background:var(--paper)!important}
+.section-title{font-family:var(--sans)!important;font-size:22px!important;font-weight:750!important;color:var(--ink)!important;margin:18px 2px 13px!important}
+.card{background:var(--card)!important;border:1px solid var(--line)!important;border-radius:24px!important;padding:18px!important;margin-bottom:18px!important;box-shadow:0 8px 24px rgba(34,73,61,.045)!important}
+.compact-management-card{box-shadow:none!important}
+.compact-management-card::before,.compact-management-card::after,.budget-modern-card::before,.budget-modern-card::after{display:none!important;content:none!important}
+.vazio{color:var(--ink-soft)!important;background:#F8FAF9!important;border-radius:18px!important;padding:22px 14px!important}
+/* Cartões */
+.carrossel-cartoes{gap:14px!important;padding:6px 2px 12px!important;margin-bottom:12px!important}
+.chip-cartao{width:190px!important;border-radius:24px!important;padding:18px!important;box-shadow:0 10px 24px rgba(36,30,76,.14)!important}
+.chip-cartao .ch-val{font-size:20px!important}
+/* Orçamento limpo */
+.budget-modern-card{border-radius:26px!important;padding:20px!important;overflow:hidden!important}
+.budget-modern-card .chart-wrap{height:230px!important;margin-top:8px!important}
+.chart-wrap{height:220px!important}
+/* Linhas */
+.conta-row,.gasto-row,.assinatura-row{background:var(--card)!important;border:1px solid var(--line)!important;border-radius:18px!important;margin-bottom:9px!important;overflow:hidden!important}
+.swipe-inner{background:var(--card)!important;padding:14px!important;border-radius:18px!important}
+/* Menu inferior moderno */
+.tabbar{position:fixed!important;left:50%!important;transform:translateX(-50%)!important;bottom:max(10px,env(safe-area-inset-bottom))!important;width:calc(100% - 28px)!important;max-width:720px!important;background:rgba(255,255,255,.96)!important;border:1px solid var(--line)!important;border-radius:24px!important;padding:8px!important;box-shadow:0 14px 34px rgba(23,53,47,.14)!important;z-index:999!important}
+.tab{min-height:58px!important;border-radius:18px!important;padding:8px 6px!important;color:var(--ink-soft)!important}
+.tab.active{background:var(--sage-soft)!important;color:var(--sage)!important}
+.tab .icone{font-size:20px!important}
+.tab .icone svg{width:24px!important;height:24px!important}
+/* Modais */
+.modal-fundo{width:100%!important;max-width:760px!important;left:50%!important;transform:translateX(-50%)!important}
+.modal{background:#fff!important;color:var(--ink)!important;border-radius:28px 28px 0 0!important}
+input,select,textarea{background:#fff!important;color:var(--ink)!important;border-color:var(--line)!important;border-radius:16px!important}
+@media(max-width:480px){
+  .app-brand{padding-left:18px!important;padding-right:18px!important}
+  .top-header{margin:0 12px!important;padding:18px!important}
+  .content{padding-left:14px!important;padding-right:14px!important}
+  .balance-figure .num{font-size:31px!important}
+  .section-title{font-size:21px!important}
+  .budget-modern-card .chart-wrap{height:210px!important}
+}
+@media(min-width:761px){body{padding:24px 0!important}.phone{max-width:430px!important;min-height:900px!important;border-radius:32px!important;box-shadow:0 24px 60px rgba(23,53,47,.18)!important}.tabbar{max-width:400px!important}}
