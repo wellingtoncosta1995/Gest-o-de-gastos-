@@ -151,6 +151,8 @@ body{margin:0;font-family:var(--sans);background:#D9D2C0;display:flex;justify-co
 .tab .icone{font-size:18px;display:block;margin-bottom:2px}
 
 .modal-fundo{position:absolute;inset:0;background:rgba(0,0,0,.55);display:none;align-items:flex-end;z-index:30}
+.modal-fundo.topo{align-items:flex-start}
+.modal-fundo.topo .modal-cartao{border-radius:0 0 20px 20px;padding-top:calc(22px + env(safe-area-inset-top))}
 .modal-fundo.aberto{display:flex}
 .modal-cartao{background:var(--paper);width:100%;border-radius:20px 20px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom));max-height:88vh;overflow-y:auto}
 .modal-cartao h3{font-family:var(--serif);margin:0 0 16px;font-size:18px}
@@ -391,7 +393,7 @@ body{margin:0;font-family:var(--sans);background:#D9D2C0;display:flex;justify-co
   </div>
 </div>
 
-<div class="modal-fundo" id="modal-perfil">
+<div class="modal-fundo topo" id="modal-perfil">
   <div class="modal-cartao">
     <h3>Meu perfil</h3>
     <div class="perfil-foto-area">
