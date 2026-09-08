@@ -12,7 +12,7 @@ select cron.schedule(
   '0 12 * * *', -- todo dia às 12:00 UTC (09:00 no horário de Brasília)
   $$
   select net.http_post(
-    url := 'https://lcuaphodobwotxplcskn.supabase.co/functions/v1/checar-assinaturas',
+    url := 'https://lcuaphodobwotxplcskn.supabase.co/functions/v1/dynamic-action',
     headers := jsonb_build_object(
       'Authorization', 'Bearer <SERVICE_ROLE_KEY>',
       'Content-Type', 'application/json'
