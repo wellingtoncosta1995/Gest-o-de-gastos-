@@ -1,4 +1,4 @@
-const CACHE = 'gestao-gastos-v21';
+const CACHE = 'gestao-gastos-v22';
 const ASSETS = [
   './',
   './index.html',
@@ -15,24 +15,18 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key))))
-  );
+  event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key)))));
   self.clients.claim();
 });
 
 function adicionarLayout(response) {
   return response.text().then(html => {
     if (!html.includes('pierre-layout.css')) {
-      html = html.replace('</head>', '<link rel="stylesheet" href="./pierre-layout.css?v=21">\n<script src="./ui-modern-v2.js?v=21" defer></script>\n</head>');
+      html = html.replace('</head>', '<link rel="stylesheet" href="./pierre-layout.css?v=22">\n<script src="./ui-modern-v2.js?v=22" defer></script>\n</head>');
     } else if (!html.includes('ui-modern-v2.js')) {
-      html = html.replace('</head>', '<script src="./ui-modern-v2.js?v=21" defer></script>\n</head>');
+      html = html.replace('</head>', '<script src="./ui-modern-v2.js?v=22" defer></script>\n</head>');
     }
-    return new Response(html, {
-      status: response.status,
-      statusText: response.statusText,
-      headers: { 'Content-Type': 'text/html; charset=utf-8' }
-    });
+    return new Response(html, {status: response.status,statusText: response.statusText,headers: {'Content-Type': 'text/html; charset=utf-8'}});
   });
 }
 
