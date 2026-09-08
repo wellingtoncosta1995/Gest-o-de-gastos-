@@ -1,8 +1,9 @@
-const CACHE = 'gestao-gastos-v20';
+const CACHE = 'gestao-gastos-v21';
 const ASSETS = [
   './',
   './index.html',
   './pierre-layout.css',
+  './ui-modern-v2.js',
   './manifest.webmanifest',
   './icon-192.png',
   './icon-512.png'
@@ -15,9 +16,7 @@ self.addEventListener('install', event => {
 
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key)))
-    )
+    caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key))))
   );
   self.clients.claim();
 });
@@ -25,7 +24,9 @@ self.addEventListener('activate', event => {
 function adicionarLayout(response) {
   return response.text().then(html => {
     if (!html.includes('pierre-layout.css')) {
-      html = html.replace('</head>', '<link rel="stylesheet" href="./pierre-layout.css?v=20">\n</head>');
+      html = html.replace('</head>', '<link rel="stylesheet" href="./pierre-layout.css?v=21">\n<script src="./ui-modern-v2.js?v=21" defer></script>\n</head>');
+    } else if (!html.includes('ui-modern-v2.js')) {
+      html = html.replace('</head>', '<script src="./ui-modern-v2.js?v=21" defer></script>\n</head>');
     }
     return new Response(html, {
       status: response.status,
@@ -39,31 +40,17 @@ self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
   const isPagina = event.request.mode === 'navigate' || url.pathname.endsWith('/index.html');
-
   if (isPagina) {
-    event.respondWith(
-      fetch(event.request)
-        .then(response => adicionarLayout(response.clone()))
-        .catch(() => caches.match('./index.html').then(cached => adicionarLayout(cached)))
-    );
+    event.respondWith(fetch(event.request).then(response => adicionarLayout(response.clone())).catch(() => caches.match('./index.html').then(cached => adicionarLayout(cached))));
     return;
   }
-
-  event.respondWith(
-    caches.match(event.request).then(cached => cached || fetch(event.request))
-  );
+  event.respondWith(caches.match(event.request).then(cached => cached || fetch(event.request)));
 });
 
 self.addEventListener('push', event => {
   let data = { title: 'Gestão de Gastos', body: '' };
   try { data = event.data.json(); } catch (e) { if (event.data) data.body = event.data.text(); }
-  event.waitUntil(
-    self.registration.showNotification(data.title || 'Gestão de Gastos', {
-      body: data.body || '',
-      icon: './icon-192.png',
-      badge: './icon-192.png',
-    })
-  );
+  event.waitUntil(self.registration.showNotification(data.title || 'Gestão de Gastos', { body: data.body || '', icon: './icon-192.png', badge: './icon-192.png' }));
 });
 
 self.addEventListener('notificationclick', event => {
