@@ -14,7 +14,7 @@ select cron.schedule(
   select net.http_post(
     url := 'https://lcuaphodobwotxplcskn.supabase.co/functions/v1/dynamic-action',
     headers := jsonb_build_object(
-      'Authorization', 'Bearer <SERVICE_ROLE_KEY>',
+      'Authorization', 'Bearer sb_secret_wKejNig8Qn922KOCUDTqJw_Wnll8OCa',
       'Content-Type', 'application/json'
     ),
     body := '{}'::jsonb
