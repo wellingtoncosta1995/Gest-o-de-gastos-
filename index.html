@@ -9,6 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Gestão de Gastos">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#F3F6F1">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#101711">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -21,13 +22,24 @@
   --sage:#2E6F5C; --sage-soft:#DCEAE3;
   --rust:#A3392E; --rust-soft:#F3DCD8;
   --gold:#9C6A1F; --gold-soft:#F3E5CC;
+  --surround:#D9D2C0;
   --serif:'Fraunces',Georgia,serif; --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 }
+@media(prefers-color-scheme:dark){
+  :root{
+    --ink:#ECF1E8; --ink-soft:#93A395;
+    --paper:#101711; --card:#17211A; --line:#263229;
+    --sage:#5FBB9C; --sage-soft:#1D3128;
+    --rust:#E38C7F; --rust-soft:#3A2420;
+    --gold:#E3B166; --gold-soft:#3A2E19;
+    --surround:#0B0F0C;
+  }
+}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;font-family:var(--sans);background:#D9D2C0;display:flex;justify-content:center;padding:24px 0;color:var(--ink)}
+body{margin:0;font-family:var(--sans);background:var(--surround);display:flex;justify-content:center;padding:24px 0;color:var(--ink)}
 .tabular{font-variant-numeric:tabular-nums}
 .phone{width:390px;max-width:100%;background:var(--paper);min-height:800px;border-radius:30px;box-shadow:0 24px 60px rgba(21,32,24,.3);overflow:hidden;display:flex;flex-direction:column;position:relative}
-.screen{flex:1;overflow-y:auto;padding-top:env(safe-area-inset-top);padding-bottom:96px;display:none}
+.screen{flex:1;overflow-y:auto;padding-top:env(safe-area-inset-top);padding-bottom:96px;display:none;opacity:1;transition:opacity .18s ease}
 .screen.active{display:block}
 #tela-login.screen{display:none}
 #tela-login.screen.active{display:flex}
@@ -37,7 +49,13 @@ body{margin:0;font-family:var(--sans);background:#D9D2C0;display:flex;justify-co
 #tela-login .sub{text-align:center;color:var(--ink-soft);margin-bottom:30px;font-size:13.5px}
 #tela-login .erro{color:var(--rust);font-size:13px;text-align:center;margin-top:10px;min-height:16px}
 #tela-login .alternar{text-align:center;margin-top:16px;color:var(--ink);text-decoration:underline;cursor:pointer;font-size:13.5px}
-#carregando{display:flex;align-items:center;justify-content:center;height:100%;color:var(--ink-soft)}
+#carregando{display:flex;flex-direction:column;gap:16px;padding:calc(20px + env(safe-area-inset-top)) 20px 20px;height:100%}
+.skel{background:linear-gradient(90deg,var(--line) 25%,var(--card) 50%,var(--line) 75%);background-size:200% 100%;animation:skel-pulse 1.4s ease-in-out infinite;border-radius:16px}
+.skel-balance{height:150px;border-radius:0 0 26px 26px;margin:-20px -20px 0}
+.skel-row{height:88px}
+.skel-card{height:170px}
+.skel-card.pequeno{height:90px}
+@keyframes skel-pulse{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
 .top-header{background:var(--sage);color:var(--paper);padding:22px 20px 26px;border-radius:0 0 26px 26px;position:relative}
 .fab-add{position:absolute;right:20px;bottom:-18px;width:38px;height:38px;border-radius:50%;background:var(--card);color:var(--sage);border:none;font-size:20px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.4);line-height:1;padding:0}
@@ -63,7 +81,7 @@ body{margin:0;font-family:var(--sans);background:#D9D2C0;display:flex;justify-co
 .mini-stats span{display:block;font-size:10.5px;opacity:.65;margin-bottom:2px}
 .mini-stats b{font-size:14px;font-weight:600}
 
-.conta-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.conta-row{position:relative;overflow:hidden;padding:0;border-bottom:1px solid var(--line)}
 .conta-row:last-child{border-bottom:0}
 .conta-info{min-width:0}
 .conta-nome{font-size:13.5px;font-weight:600}
@@ -83,13 +101,15 @@ body{margin:0;font-family:var(--sans);background:#D9D2C0;display:flex;justify-co
 .cat-name{flex:1;font-size:13px}
 .cat-value{font-size:13px;font-weight:600}
 
-.gasto-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.gasto-row{position:relative;overflow:hidden;padding:0;border-bottom:1px solid var(--line)}
 .gasto-row:last-child{border-bottom:0}
 .gasto-info{min-width:0}
 .gasto-desc{font-size:13.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .gasto-meta{color:var(--ink-soft);font-size:11.5px;margin-top:2px}
 .gasto-valor{color:var(--rust);font-size:13.5px;font-weight:700;white-space:nowrap}
 .btn-excluir{border:0;background:transparent;color:var(--ink-soft);padding:4px;font-size:15px;cursor:pointer}
+.swipe-inner{position:relative;background:var(--card);display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;transition:transform .18s ease}
+.swipe-bg{position:absolute;inset:0;background:var(--rust);color:#fff;display:flex;align-items:center;justify-content:flex-end;padding-right:18px;font-size:12px;font-weight:700;cursor:pointer}
 
 .item-row{margin-bottom:14px}
 .linha-entre{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
@@ -103,7 +123,7 @@ body{margin:0;font-family:var(--sans);background:#D9D2C0;display:flex;justify-co
 .progresso.gold{background:var(--gold)}
 .progresso.rust{background:var(--rust)}
 .alerta-strip{background:var(--gold-soft);color:var(--gold);font-size:11.5px;padding:9px 12px;border-radius:9px;font-weight:600;margin-bottom:12px}
-.assinatura-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.assinatura-row{position:relative;overflow:hidden;padding:0;border-bottom:1px solid var(--line)}
 .assinatura-row:last-child{border-bottom:0}
 .assinatura-ico{width:30px;height:30px;border-radius:50%;flex-shrink:0;background:var(--sage);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px}
 .assinatura-info{flex:1;min-width:0}
@@ -179,12 +199,21 @@ body{margin:0;font-family:var(--sans);background:#D9D2C0;display:flex;justify-co
 .perfil-popup .sair{background:transparent;color:var(--rust)}
 .perfil-popup .fechar-perfil{background:transparent;color:var(--ink-soft)}
 
+.ptr-indicator{position:absolute;top:8px;left:50%;transform:translateX(-50%) translateY(0);opacity:0;background:var(--card);color:var(--ink-soft);font-size:11px;font-weight:600;padding:6px 14px;border-radius:20px;box-shadow:0 4px 12px rgba(21,32,24,.2);z-index:40;pointer-events:none;transition:opacity .15s}
+.ptr-indicator.pronto{color:var(--sage)}
+
 @media(max-width:480px){body{padding:0;background:var(--paper)}.phone{width:100%;min-height:100vh;border-radius:0;box-shadow:none}}
 </style>
 </head>
 <body>
 <div class="phone">
-<div id="carregando">Carregando...</div>
+<div id="ptr-indicator" class="ptr-indicator">Puxe para atualizar</div>
+<div id="carregando">
+  <div class="skel skel-balance"></div>
+  <div class="skel skel-row"></div>
+  <div class="skel skel-card"></div>
+  <div class="skel skel-card pequeno"></div>
+</div>
 
 <div class="screen" id="tela-login">
   <h1>Gestão de Gastos</h1>
@@ -309,7 +338,7 @@ body{margin:0;font-family:var(--sans);background:#D9D2C0;display:flex;justify-co
       </select>
     </div>
     <div class="campo"><label>Descrição</label><input type="text" id="gasto-descricao" placeholder="Ex: Supermercado"></div>
-    <div class="campo"><label>Valor (R$)</label><input type="text" id="gasto-valor" placeholder="0,00" inputmode="decimal"></div>
+    <div class="campo"><label>Valor (R$)</label><input type="text" id="gasto-valor" placeholder="0,00" inputmode="decimal" oninput="mascaraMoeda(this)"></div>
     <div class="campo"><label>Categoria</label>
       <select id="gasto-categoria" onchange="selecionarCategoria(this)">
         <option>Moradia</option><option>Alimentação</option><option>Transporte</option>
@@ -335,7 +364,7 @@ body{margin:0;font-family:var(--sans);background:#D9D2C0;display:flex;justify-co
         <option value="carteira_digital">Carteira digital</option>
       </select>
     </div>
-    <div class="campo"><label>Saldo atual (R$)</label><input type="text" id="conta-saldo" placeholder="0,00" inputmode="decimal"></div>
+    <div class="campo"><label>Saldo atual (R$)</label><input type="text" id="conta-saldo" placeholder="0,00" inputmode="decimal" oninput="mascaraMoeda(this)"></div>
     <button class="modal-salvar" onclick="salvarConta()">Salvar conta</button>
     <div class="modal-cancelar" onclick="fecharModal('modal-conta')">Cancelar</div>
   </div>
@@ -345,7 +374,7 @@ body{margin:0;font-family:var(--sans);background:#D9D2C0;display:flex;justify-co
   <div class="modal-cartao">
     <h3>Nova dívida</h3>
     <div class="campo"><label>Nome</label><input type="text" id="divida-nome" placeholder="Ex: Fatura Nubank"></div>
-    <div class="campo"><label>Valor total (R$)</label><input type="text" id="divida-valor" placeholder="0,00" inputmode="decimal"></div>
+    <div class="campo"><label>Valor total (R$)</label><input type="text" id="divida-valor" placeholder="0,00" inputmode="decimal" oninput="mascaraMoeda(this)"></div>
     <div class="campo"><label>Número de parcelas</label><input type="text" id="divida-parcelas" placeholder="Ex: 3" inputmode="numeric"></div>
     <button class="modal-salvar" onclick="salvarDivida()">Salvar</button>
     <div class="modal-cancelar" onclick="fecharModal('modal-divida')">Cancelar</div>
@@ -356,7 +385,7 @@ body{margin:0;font-family:var(--sans);background:#D9D2C0;display:flex;justify-co
   <div class="modal-cartao">
     <h3>Nova meta</h3>
     <div class="campo"><label>Nome</label><input type="text" id="meta-nome" placeholder="Ex: Reserva de emergência"></div>
-    <div class="campo"><label>Valor alvo (R$)</label><input type="text" id="meta-valor" placeholder="0,00" inputmode="decimal"></div>
+    <div class="campo"><label>Valor alvo (R$)</label><input type="text" id="meta-valor" placeholder="0,00" inputmode="decimal" oninput="mascaraMoeda(this)"></div>
     <button class="modal-salvar" onclick="salvarMeta()">Salvar</button>
     <div class="modal-cancelar" onclick="fecharModal('modal-meta')">Cancelar</div>
   </div>
@@ -367,7 +396,7 @@ body{margin:0;font-family:var(--sans);background:#D9D2C0;display:flex;justify-co
     <h3>Novo cartão</h3>
     <div class="campo"><label>Nome do cartão</label><input type="text" id="cartao-nome" placeholder="Ex: Nubank"></div>
     <div class="campo"><label>Banco</label><input type="text" id="cartao-banco" placeholder="Ex: Nubank"></div>
-    <div class="campo"><label>Limite total (R$)</label><input type="text" id="cartao-limite" placeholder="0,00" inputmode="decimal"></div>
+    <div class="campo"><label>Limite total (R$)</label><input type="text" id="cartao-limite" placeholder="0,00" inputmode="decimal" oninput="mascaraMoeda(this)"></div>
     <div class="campo"><label>Dia de fechamento da fatura</label><input type="text" id="cartao-fechamento" placeholder="Ex: 22" inputmode="numeric"></div>
     <div class="campo"><label>Dia de vencimento da fatura</label><input type="text" id="cartao-vencimento" placeholder="Ex: 29" inputmode="numeric"></div>
     <button class="modal-salvar" onclick="salvarCartao()">Salvar cartão</button>
@@ -379,7 +408,7 @@ body{margin:0;font-family:var(--sans);background:#D9D2C0;display:flex;justify-co
   <div class="modal-cartao">
     <h3>Nova assinatura</h3>
     <div class="campo"><label>Nome</label><input type="text" id="assinatura-nome" placeholder="Ex: Netflix, Aluguel, Academia"></div>
-    <div class="campo"><label>Valor (R$)</label><input type="text" id="assinatura-valor" placeholder="0,00" inputmode="decimal"></div>
+    <div class="campo"><label>Valor (R$)</label><input type="text" id="assinatura-valor" placeholder="0,00" inputmode="decimal" oninput="mascaraMoeda(this)"></div>
     <div class="campo"><label>Ciclo de cobrança</label>
       <select id="assinatura-ciclo" onchange="document.getElementById('campo-mes-cobranca').style.display=this.value==='anual'?'block':'none'">
         <option value="mensal">Mensal</option>
@@ -403,7 +432,7 @@ body{margin:0;font-family:var(--sans);background:#D9D2C0;display:flex;justify-co
     <div style="text-align:center;margin:-14px 0 20px;color:var(--ink-soft);font-size:12px" id="perfil-modal-email"></div>
     <div class="campo"><label>Nome completo</label><input type="text" id="perfil-nome" placeholder="Como quer ser chamado"></div>
     <div class="campo"><label>Telefone</label><input type="tel" id="perfil-telefone" placeholder="(00) 00000-0000"></div>
-    <div class="campo"><label>Renda mensal (R$)</label><input type="text" id="perfil-renda" placeholder="0,00" inputmode="decimal"></div>
+    <div class="campo"><label>Renda mensal (R$)</label><input type="text" id="perfil-renda" placeholder="0,00" inputmode="decimal" oninput="mascaraMoeda(this)"></div>
     <div class="campo"><label>Principal objetivo financeiro</label><input type="text" id="perfil-objetivo" placeholder="Ex: montar reserva de emergência"></div>
     <div class="nota-seguranca" id="nota-biometria">Após salvar seu perfil, você poderá ativar o desbloqueio com Face ID/biometria deste aparelho.</div>
     <button class="modal-salvar" onclick="salvarPerfil()">Salvar perfil</button>
@@ -424,6 +453,9 @@ const MESES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','
 
 function formatarReal(v){return Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
 function escaparHtml(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+function mascaraMoeda(input){let v=input.value.replace(/\D/g,'');if(!v){input.value='';return}input.value=(Number(v)/100).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function vibrar(ms=10){if(navigator.vibrate)navigator.vibrate(ms)}
+function cssVar(nome){return getComputedStyle(document.documentElement).getPropertyValue(nome).trim()}
 function valorMonetario(t){const v=String(t||'').trim().replace(/R\$|\s/g,'');const n=v.includes(',')?Number(v.replace(/\./g,'').replace(',','.')):Number(v);return Number.isFinite(n)&&n>0?n:0}
 function informarErro(e,a){if(!e)return false;console.error(e);alert('Não foi possível '+a+'. Tente novamente.');return true}
 
@@ -450,13 +482,54 @@ async function carregarTudo(){
   if(informarErro(a.error,'carregar os gastos')||informarErro(b.error,'carregar as dívidas')||informarErro(c.error,'carregar as metas')||informarErro(d.error,'carregar os cartões')||informarErro(e.error,'carregar as contas')||informarErro(f.error,'carregar os orçamentos')||informarErro(g.error,'carregar as assinaturas'))return;
   gastos=a.data||[];dividas=b.data||[];metas=c.data||[];cartoes=d.data||[];contas=e.data||[];orcamentos=f.data||[];assinaturas=g.data||[];
   renderResumo();renderDividas();renderMetas();renderCartoes();renderContas();renderOrcamentos();renderAssinaturas();renderCarrosselCartoes();
+  vibrar();
 }
-function irPara(id,tab){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));tab.classList.add('active')}
+function irPara(id,tab){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));const alvo=document.getElementById(id);alvo.style.opacity='0';alvo.classList.add('active');requestAnimationFrame(()=>requestAnimationFrame(()=>{alvo.style.opacity='1'}));document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));tab.classList.add('active')}
 function abrirModal(id){document.getElementById(id).classList.add('aberto')}
 function fecharModal(id){document.getElementById(id).classList.remove('aberto')}
 function abrirPopupPerfil(){document.getElementById('perfil-popup').classList.toggle('aberto')}
 function fecharPopupPerfil(){document.getElementById('perfil-popup').classList.remove('aberto')}
 document.addEventListener('click',e=>{const pop=document.getElementById('perfil-popup');const bot=e.target.closest('#perfil-mini');if(pop&&!pop.contains(e.target)&&!bot)pop.classList.remove('aberto')});
+
+let gesto=null;
+document.addEventListener('touchstart',e=>{
+  const swipeRow=e.target.closest('.swipe-inner');
+  const tela=e.target.closest('.screen.active');
+  gesto={x:e.touches[0].clientX,y:e.touches[0].clientY,dx:0,dy:0,dir:null,swipeRow,tela};
+  if(swipeRow)document.querySelectorAll('.swipe-inner.aberto').forEach(el=>{if(el!==swipeRow){el.style.transform='';el.classList.remove('aberto')}});
+},{passive:true});
+document.addEventListener('touchmove',e=>{
+  if(!gesto)return;
+  gesto.dx=e.touches[0].clientX-gesto.x;
+  gesto.dy=e.touches[0].clientY-gesto.y;
+  if(!gesto.dir&&(Math.abs(gesto.dx)>8||Math.abs(gesto.dy)>8))gesto.dir=Math.abs(gesto.dx)>Math.abs(gesto.dy)?'h':'v';
+  if(gesto.dir==='h'&&gesto.swipeRow){
+    if(gesto.dx<0)gesto.swipeRow.style.transform=`translateX(${Math.max(gesto.dx,-88)}px)`;
+  }else if(gesto.dir==='v'&&gesto.tela&&gesto.tela.scrollTop<=0&&gesto.dy>0){
+    const ind=document.getElementById('ptr-indicator');
+    const p=Math.min(gesto.dy/70,1);
+    ind.style.opacity=p;
+    ind.style.transform=`translateX(-50%) translateY(${Math.min(gesto.dy*0.5,40)}px)`;
+    const pronto=gesto.dy>70;
+    ind.classList.toggle('pronto',pronto);
+    ind.textContent=pronto?'Solte para atualizar':'Puxe para atualizar';
+  }
+},{passive:true});
+document.addEventListener('touchend',()=>{
+  if(!gesto)return;
+  if(gesto.dir==='h'&&gesto.swipeRow){
+    if(gesto.dx<-40){gesto.swipeRow.style.transform='translateX(-88px)';gesto.swipeRow.classList.add('aberto')}
+    else{gesto.swipeRow.style.transform='';gesto.swipeRow.classList.remove('aberto')}
+  }
+  if(gesto.dir==='v'&&gesto.tela&&gesto.dy>70)carregarTudo();
+  const ind=document.getElementById('ptr-indicator');
+  ind.style.opacity='0';ind.style.transform='translateX(-50%) translateY(0)';ind.classList.remove('pronto');
+  gesto=null;
+});
+document.addEventListener('click',e=>{
+  if(e.target.closest('.swipe-bg'))return;
+  document.querySelectorAll('.swipe-inner.aberto').forEach(el=>{el.style.transform='';el.classList.remove('aberto')});
+});
 
 function abrirPerfil(){const p=usuarioAtual?.user_metadata?.perfil||{};document.getElementById('perfil-nome').value=p.nome||'';document.getElementById('perfil-telefone').value=p.telefone||'';document.getElementById('perfil-renda').value=p.renda||'';document.getElementById('perfil-objetivo').value=p.objetivo||'';document.getElementById('perfil-modal-email').textContent=usuarioAtual?.email||'';atualizarFotoPerfil();const b=document.getElementById('btn-biometria');b.style.display=window.PublicKeyCredential&&location.hostname?'block':'none';document.getElementById('nota-biometria').textContent=biometriaAtiva()?'Biometria ativa neste aparelho. O Face ID será solicitado ao abrir o app.':window.PublicKeyCredential&&location.hostname?'Ative o Face ID/biometria deste aparelho após salvar. Seus dados biométricos não são enviados ao app.':'A biometria só pode ser ativada quando o app estiver publicado em HTTPS.';abrirModal('modal-perfil')}
 async function salvarPerfil(){if(!usuarioAtual)return;const perfil={nome:document.getElementById('perfil-nome').value.trim(),telefone:document.getElementById('perfil-telefone').value.trim(),renda:document.getElementById('perfil-renda').value.trim(),objetivo:document.getElementById('perfil-objetivo').value.trim()},r=await sb.auth.updateUser({data:{...usuarioAtual.user_metadata,perfil}});if(informarErro(r.error,'salvar seu perfil'))return;usuarioAtual=r.data.user;atualizarFotoPerfil();alert('Perfil salvo com sucesso.');fecharModal('modal-perfil')}
@@ -492,7 +565,7 @@ function renderResumo(){
   renderTendencia();
 
   const l=document.getElementById('lista-gastos-recentes');
-  l.innerHTML=gastos.length?gastos.slice(0,6).map(g=>{const entrada=g.tipo==='entrada';return`<div class="gasto-row"><div class="gasto-info"><div class="gasto-desc">${escaparHtml(g.descricao)}</div><div class="gasto-meta">${escaparHtml(g.categoria||'Outros')}</div></div><div style="display:flex;align-items:center;gap:5px"><span class="gasto-valor tabular" style="color:${entrada?'var(--sage)':'var(--rust)'}">${entrada?'+':'−'}${formatarReal(g.valor)}</span><button class="btn-excluir" onclick="excluirGasto('${g.id}')">✕</button></div></div>`}).join(''):'<div class="vazio">Nenhum gasto lançado ainda. Toque em "+ novo".</div>';
+  l.innerHTML=gastos.length?gastos.slice(0,6).map(g=>{const entrada=g.tipo==='entrada';return`<div class="gasto-row"><div class="swipe-bg" onclick="excluirGasto('${g.id}')">Excluir</div><div class="swipe-inner"><div class="gasto-info"><div class="gasto-desc">${escaparHtml(g.descricao)}</div><div class="gasto-meta">${escaparHtml(g.categoria||'Outros')}</div></div><span class="gasto-valor tabular" style="color:${entrada?'var(--sage)':'var(--rust)'}">${entrada?'+':'−'}${formatarReal(g.valor)}</span></div></div>`}).join(''):'<div class="vazio">Nenhum gasto lançado ainda. Toque em "+ novo".</div>';
 
   const lm=document.getElementById('lista-metas-resumo');
   lm.innerHTML=metas.length?metas.slice(0,3).map(m=>{const p=Math.min((Number(m.valor_atual)||0)/Number(m.valor_alvo),1);return`<div class="item-row"><div class="linha-entre"><span class="nome">${escaparHtml(m.nome)}</span><span class="detalhe tabular">${formatarReal(m.valor_atual)} / ${formatarReal(m.valor_alvo)}</span></div><div class="trilha"><div class="progresso" style="width:${p*100}%"></div></div></div>`}).join(''):'<div class="vazio">Nenhuma meta cadastrada.</div>';
@@ -507,7 +580,7 @@ function renderCategorias(pc,total){
   cont.innerHTML=entries.map(([n,v],i)=>`<div class="cat-row"><span class="cat-dot" style="background:${CORES[i%CORES.length]}"></span><span class="cat-name">${escaparHtml(n)}</span><span class="cat-value tabular">${formatarReal(v)} · ${Math.round(v/total*100)}%</span></div>`).join('');
   const ctx=document.getElementById('catChart');
   if(catChartInst)catChartInst.destroy();
-  catChartInst=new Chart(ctx,{type:'doughnut',data:{labels:entries.map(e=>e[0]),datasets:[{data:entries.map(e=>e[1]),backgroundColor:entries.map((e,i)=>CORES[i%CORES.length]),borderWidth:2,borderColor:'#FFFFFF'}]},options:{cutout:'68%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.label+': '+formatarReal(c.raw)}}}}});
+  catChartInst=new Chart(ctx,{type:'doughnut',data:{labels:entries.map(e=>e[0]),datasets:[{data:entries.map(e=>e[1]),backgroundColor:entries.map((e,i)=>CORES[i%CORES.length]),borderWidth:2,borderColor:cssVar('--card')}]},options:{cutout:'68%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.label+': '+formatarReal(c.raw)}}}}});
 }
 
 function renderTendencia(){
@@ -520,7 +593,7 @@ function renderTendencia(){
   }
   const ctx=document.getElementById('trendChart');
   if(trendChartInst)trendChartInst.destroy();
-  trendChartInst=new Chart(ctx,{type:'bar',data:{labels,datasets:[{data:valores,backgroundColor:'#A3392E',borderRadius:4,maxBarThickness:20}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false},ticks:{color:'#4C594E'}},y:{grid:{color:'#D6DED2'},ticks:{color:'#4C594E',callback:v=>'R$ '+v}}},plugins:{legend:{display:false}}}});
+  trendChartInst=new Chart(ctx,{type:'bar',data:{labels,datasets:[{data:valores,backgroundColor:cssVar('--rust'),borderRadius:4,maxBarThickness:20}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false},ticks:{color:cssVar('--ink-soft')}},y:{grid:{color:cssVar('--line')},ticks:{color:cssVar('--ink-soft'),callback:v=>'R$ '+v}}},plugins:{legend:{display:false}}}});
 }
 
 async function salvarDivida(){const nome=document.getElementById('divida-nome').value.trim(),valor_total=valorMonetario(document.getElementById('divida-valor').value),parcelas_total=Number(document.getElementById('divida-parcelas').value)||1;if(!nome||!valor_total){alert('Preencha o nome e o valor.');return}const{error}=await sb.from('dividas').insert({nome,valor_total,parcelas_total,parcelas_pagas:0});if(informarErro(error,'salvar a dívida'))return;document.getElementById('divida-nome').value='';document.getElementById('divida-valor').value='';document.getElementById('divida-parcelas').value='';fecharModal('modal-divida');carregarTudo()}
@@ -551,10 +624,10 @@ function proximaCobranca(a,referencia=new Date()){if(a.ciclo==='anual'){let ano=
 function diasAte(d){return Math.ceil((d-new Date())/86400000)}
 async function salvarAssinatura(){const nome=document.getElementById('assinatura-nome').value.trim(),valor=valorMonetario(document.getElementById('assinatura-valor').value),ciclo=document.getElementById('assinatura-ciclo').value,dia_cobranca=Math.min(31,Math.max(1,parseInt(document.getElementById('assinatura-dia').value)||1)),mes_cobranca=ciclo==='anual'?Math.min(12,Math.max(1,parseInt(document.getElementById('assinatura-mes').value)||1)):null;if(!nome||!valor){alert('Preencha o nome e o valor.');return}const{error}=await sb.from('assinaturas').insert({nome,valor,ciclo,dia_cobranca,mes_cobranca});if(informarErro(error,'salvar a assinatura'))return;document.getElementById('assinatura-nome').value='';document.getElementById('assinatura-valor').value='';document.getElementById('assinatura-dia').value='';document.getElementById('assinatura-mes').value='';fecharModal('modal-assinatura');carregarTudo()}
 async function excluirAssinatura(id){if(!confirm('Excluir esta assinatura?'))return;const{error}=await sb.from('assinaturas').delete().eq('id',id);if(informarErro(error,'excluir a assinatura'))return;carregarTudo()}
-function renderAssinaturas(){const box=document.getElementById('lista-assinaturas'),alertas=document.getElementById('alertas-assinaturas');if(!box)return;const ativas=assinaturas.filter(a=>a.ativo!==false);const totalMensal=ativas.reduce((s,a)=>s+(a.ciclo==='anual'?Number(a.valor)/12:Number(a.valor)),0);const totalAnual=ativas.reduce((s,a)=>s+(a.ciclo==='anual'?Number(a.valor):Number(a.valor)*12),0);document.getElementById('assinaturas-mensal').textContent=formatarReal(totalMensal);document.getElementById('assinaturas-anual').textContent=formatarReal(totalAnual);const proximas=ativas.map(a=>({a,d:proximaCobranca(a),dias:diasAte(proximaCobranca(a))})).filter(x=>x.dias<=3);alertas.innerHTML=proximas.length?proximas.map(x=>`<div class="alerta-strip">⏰ ${escaparHtml(x.a.nome)} vence ${x.dias<=0?'hoje':'em '+x.dias+' dia(s)'} — ${formatarReal(x.a.valor)}</div>`).join(''):'';if(!assinaturas.length){box.innerHTML='<div class="vazio">Nenhuma assinatura cadastrada. Toque em "+ Nova".</div>';return}box.innerHTML=assinaturas.map((a,i)=>{const prox=proximaCobranca(a);return`<div class="assinatura-row"><div class="assinatura-ico" style="background:${CORES[i%CORES.length]}">${escaparHtml(a.nome.slice(0,1).toUpperCase())}</div><div class="assinatura-info"><b>${escaparHtml(a.nome)}</b><small>${a.ciclo==='anual'?'anual':'mensal'} · próxima em ${prox.getDate()}/${prox.getMonth()+1}</small></div><span class="tabular" style="font-weight:700;font-size:12.5px">${formatarReal(a.valor)}</span><button class="btn-excluir" onclick="excluirAssinatura('${a.id}')">✕</button></div>`}).join('')}
+function renderAssinaturas(){const box=document.getElementById('lista-assinaturas'),alertas=document.getElementById('alertas-assinaturas');if(!box)return;const ativas=assinaturas.filter(a=>a.ativo!==false);const totalMensal=ativas.reduce((s,a)=>s+(a.ciclo==='anual'?Number(a.valor)/12:Number(a.valor)),0);const totalAnual=ativas.reduce((s,a)=>s+(a.ciclo==='anual'?Number(a.valor):Number(a.valor)*12),0);document.getElementById('assinaturas-mensal').textContent=formatarReal(totalMensal);document.getElementById('assinaturas-anual').textContent=formatarReal(totalAnual);const proximas=ativas.map(a=>({a,d:proximaCobranca(a),dias:diasAte(proximaCobranca(a))})).filter(x=>x.dias<=3);alertas.innerHTML=proximas.length?proximas.map(x=>`<div class="alerta-strip">⏰ ${escaparHtml(x.a.nome)} vence ${x.dias<=0?'hoje':'em '+x.dias+' dia(s)'} — ${formatarReal(x.a.valor)}</div>`).join(''):'';if(!assinaturas.length){box.innerHTML='<div class="vazio">Nenhuma assinatura cadastrada. Toque em "+ Nova".</div>';return}box.innerHTML=assinaturas.map((a,i)=>{const prox=proximaCobranca(a);return`<div class="assinatura-row"><div class="swipe-bg" onclick="excluirAssinatura('${a.id}')">Excluir</div><div class="swipe-inner"><div class="assinatura-ico" style="background:${CORES[i%CORES.length]}">${escaparHtml(a.nome.slice(0,1).toUpperCase())}</div><div class="assinatura-info"><b>${escaparHtml(a.nome)}</b><small>${a.ciclo==='anual'?'anual':'mensal'} · próxima em ${prox.getDate()}/${prox.getMonth()+1}</small></div><span class="tabular" style="font-weight:700;font-size:12.5px">${formatarReal(a.valor)}</span></div></div>`}).join('')}
 async function salvarConta(){const instituicao=document.getElementById('conta-instituicao').value.trim(),tipo=document.getElementById('conta-tipo').value,saldo_atual=valorMonetario(document.getElementById('conta-saldo').value);if(!instituicao){alert('Informe a instituição.');return}const{error}=await sb.from('contas').insert({instituicao,tipo,saldo_atual});if(informarErro(error,'salvar a conta'))return;document.getElementById('conta-instituicao').value='';document.getElementById('conta-saldo').value='';fecharModal('modal-conta');carregarTudo()}
 async function excluirConta(id){if(!confirm('Excluir esta conta?'))return;const{error}=await sb.from('contas').delete().eq('id',id);if(informarErro(error,'excluir a conta'))return;carregarTudo()}
-function renderContas(){const l=document.getElementById('lista-contas');if(!l)return;if(!contas.length){l.innerHTML='<div class="vazio">Nenhuma conta cadastrada. Toque em "+ Nova".</div>';return}l.innerHTML=contas.map(c=>`<div class="conta-row"><div class="conta-info"><div class="conta-nome">${escaparHtml(c.instituicao)}</div><div class="conta-tipo">${TIPOS_CONTA[c.tipo]||c.tipo}</div></div><div style="display:flex;align-items:center;gap:5px"><span class="conta-saldo tabular">${formatarReal(c.saldo_atual)}</span><button class="btn-excluir" onclick="excluirConta('${c.id}')">✕</button></div></div>`).join('')}
+function renderContas(){const l=document.getElementById('lista-contas');if(!l)return;if(!contas.length){l.innerHTML='<div class="vazio">Nenhuma conta cadastrada. Toque em "+ Nova".</div>';return}l.innerHTML=contas.map(c=>`<div class="conta-row"><div class="swipe-bg" onclick="excluirConta('${c.id}')">Excluir</div><div class="swipe-inner"><div class="conta-info"><div class="conta-nome">${escaparHtml(c.instituicao)}</div><div class="conta-tipo">${TIPOS_CONTA[c.tipo]||c.tipo}</div></div><span class="conta-saldo tabular">${formatarReal(c.saldo_atual)}</span></div></div>`).join('')}
 </script>
 <script>if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(console.error));</script>
 </body>
