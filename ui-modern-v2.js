@@ -1,7 +1,7 @@
-/* Meu Financeiro v25 — melhorias visuais sem alterar dados ou funcionalidades. */
+/* Meu Financeiro v27 — melhorias visuais sem alterar dados ou funcionalidades. */
 (function(){
   const norm=s=>(s||'').replace(/\s+/g,' ').trim().toLowerCase();
-  const logo=`<div class="app-brand" aria-label="Meu Financeiro"><svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="mf25" x1="0" x2="1" y1="1" y2="0"><stop stop-color="#174A60"/><stop offset="1" stop-color="#36B97A"/></linearGradient></defs><path d="M8 48V25l13 13 13-20v30h8V11l7 7V5l15 15v28H52V35L40 48H30L21 39 8 48Z" fill="url(#mf25)"/></svg><div class="brand-copy"><b>MEU FINANCEIRO</b><span>CONTROLE INTELIGENTE</span></div></div>`;
+  const logo=`<div class="app-brand" aria-label="Meu Financeiro"><svg viewBox="0 0 72 72" aria-hidden="true"><defs><linearGradient id="mf27" x1="0" x2="1" y1="1" y2="0"><stop stop-color="#174A60"/><stop offset="1" stop-color="#36B97A"/></linearGradient></defs><path d="M10 54V29l14 14 14-21v32h8V14l7 7V8l15 15v31H56V40L43 54H32L24 44 10 54Z" fill="url(#mf27)"/></svg><div class="brand-copy"><b>MEU FINANCEIRO</b><span>CONTROLE INTELIGENTE</span></div></div>`;
   function addBrand(){
     if(document.querySelector('.app-brand')) return;
     const header=document.querySelector('.top-header');
