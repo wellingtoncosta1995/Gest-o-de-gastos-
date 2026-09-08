@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Gestão de Gastos">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#101711">
+<meta name="theme-color" content="#F3F6F1">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-192.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -16,17 +16,17 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap');
 :root{
-  --ink:#ECF1E8; --ink-soft:#93A395;
-  --paper:#101711; --card:#17211A; --line:#263229;
-  --sage:#5FBB9C; --sage-soft:#1D3128;
-  --rust:#E38C7F; --rust-soft:#3A2420;
-  --gold:#E3B166; --gold-soft:#3A2E19;
+  --ink:#152018; --ink-soft:#4C594E;
+  --paper:#F3F6F1; --card:#FFFFFF; --line:#D6DED2;
+  --sage:#2E6F5C; --sage-soft:#DCEAE3;
+  --rust:#A3392E; --rust-soft:#F3DCD8;
+  --gold:#9C6A1F; --gold-soft:#F3E5CC;
   --serif:'Fraunces',Georgia,serif; --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;font-family:var(--sans);background:#0B0F0C;display:flex;justify-content:center;padding:24px 0;color:var(--ink)}
+body{margin:0;font-family:var(--sans);background:#D9D2C0;display:flex;justify-content:center;padding:24px 0;color:var(--ink)}
 .tabular{font-variant-numeric:tabular-nums}
-.phone{width:390px;max-width:100%;background:var(--paper);min-height:800px;border-radius:30px;box-shadow:0 24px 60px rgba(0,0,0,.5);overflow:hidden;display:flex;flex-direction:column;position:relative}
+.phone{width:390px;max-width:100%;background:var(--paper);min-height:800px;border-radius:30px;box-shadow:0 24px 60px rgba(21,32,24,.3);overflow:hidden;display:flex;flex-direction:column;position:relative}
 .screen{flex:1;overflow-y:auto;padding-top:env(safe-area-inset-top);padding-bottom:96px;display:none}
 .screen.active{display:block}
 #tela-login.screen{display:none}
@@ -165,7 +165,7 @@ body{margin:0;font-family:var(--sans);background:#0B0F0C;display:flex;justify-co
 .perfil-foto img{width:100%;height:100%;object-fit:cover}
 .sair-perfil{display:block;width:100%;border:0;background:transparent;color:var(--rust);font-size:13.5px;padding:8px;margin-top:8px;cursor:pointer;font-weight:600}
 .nota-seguranca{background:var(--paper);color:var(--ink-soft);border-radius:8px;padding:10px;font-size:11.5px;line-height:1.4;margin-bottom:6px}
-.perfil-popup{position:absolute;top:64px;left:18px;right:18px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;z-index:35;box-shadow:0 15px 35px rgba(0,0,0,.45);display:none}
+.perfil-popup{position:absolute;top:64px;left:18px;right:18px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;z-index:35;box-shadow:0 15px 35px rgba(21,32,24,.25);display:none}
 .perfil-popup.aberto{display:block}
 .perfil-popup-topo{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--line)}
 .perfil-popup-avatar{width:44px;height:44px;border-radius:50%;background:var(--sage);color:var(--paper);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex-shrink:0;overflow:hidden}
@@ -505,7 +505,7 @@ function renderCategorias(pc,total){
   cont.innerHTML=entries.map(([n,v],i)=>`<div class="cat-row"><span class="cat-dot" style="background:${CORES[i%CORES.length]}"></span><span class="cat-name">${escaparHtml(n)}</span><span class="cat-value tabular">${formatarReal(v)} · ${Math.round(v/total*100)}%</span></div>`).join('');
   const ctx=document.getElementById('catChart');
   if(catChartInst)catChartInst.destroy();
-  catChartInst=new Chart(ctx,{type:'doughnut',data:{labels:entries.map(e=>e[0]),datasets:[{data:entries.map(e=>e[1]),backgroundColor:entries.map((e,i)=>CORES[i%CORES.length]),borderWidth:2,borderColor:'#17211A'}]},options:{cutout:'68%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.label+': '+formatarReal(c.raw)}}}}});
+  catChartInst=new Chart(ctx,{type:'doughnut',data:{labels:entries.map(e=>e[0]),datasets:[{data:entries.map(e=>e[1]),backgroundColor:entries.map((e,i)=>CORES[i%CORES.length]),borderWidth:2,borderColor:'#FFFFFF'}]},options:{cutout:'68%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.label+': '+formatarReal(c.raw)}}}}});
 }
 
 function renderTendencia(){
@@ -518,7 +518,7 @@ function renderTendencia(){
   }
   const ctx=document.getElementById('trendChart');
   if(trendChartInst)trendChartInst.destroy();
-  trendChartInst=new Chart(ctx,{type:'bar',data:{labels,datasets:[{data:valores,backgroundColor:'#E38C7F',borderRadius:4,maxBarThickness:20}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false},ticks:{color:'#93A395'}},y:{grid:{color:'#263229'},ticks:{color:'#93A395',callback:v=>'R$ '+v}}},plugins:{legend:{display:false}}}});
+  trendChartInst=new Chart(ctx,{type:'bar',data:{labels,datasets:[{data:valores,backgroundColor:'#A3392E',borderRadius:4,maxBarThickness:20}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false},ticks:{color:'#4C594E'}},y:{grid:{color:'#D6DED2'},ticks:{color:'#4C594E',callback:v=>'R$ '+v}}},plugins:{legend:{display:false}}}});
 }
 
 async function salvarDivida(){const nome=document.getElementById('divida-nome').value.trim(),valor_total=valorMonetario(document.getElementById('divida-valor').value),parcelas_total=Number(document.getElementById('divida-parcelas').value)||1;if(!nome||!valor_total){alert('Preencha o nome e o valor.');return}const{error}=await sb.from('dividas').insert({nome,valor_total,parcelas_total,parcelas_pagas:0});if(informarErro(error,'salvar a dívida'))return;document.getElementById('divida-nome').value='';document.getElementById('divida-valor').value='';document.getElementById('divida-parcelas').value='';fecharModal('modal-divida');carregarTudo()}

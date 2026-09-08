@@ -4,8 +4,8 @@
   "description": "Controle pessoal de gastos, dívidas e metas financeiras.",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#101711",
-  "theme_color": "#101711",
+  "background_color": "#F3F6F1",
+  "theme_color": "#F3F6F1",
   "icons": [
     {
       "src": "icon-192.png",
