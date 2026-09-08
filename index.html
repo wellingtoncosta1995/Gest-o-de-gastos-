@@ -27,7 +27,7 @@
 body{margin:0;font-family:var(--sans);background:#0B0F0C;display:flex;justify-content:center;padding:24px 0;color:var(--ink)}
 .tabular{font-variant-numeric:tabular-nums}
 .phone{width:390px;max-width:100%;background:var(--paper);min-height:800px;border-radius:30px;box-shadow:0 24px 60px rgba(0,0,0,.5);overflow:hidden;display:flex;flex-direction:column;position:relative}
-.screen{flex:1;overflow-y:auto;padding-bottom:96px;display:none}
+.screen{flex:1;overflow-y:auto;padding-top:env(safe-area-inset-top);padding-bottom:96px;display:none}
 .screen.active{display:block}
 #tela-login.screen{display:none}
 #tela-login.screen.active{display:flex}
