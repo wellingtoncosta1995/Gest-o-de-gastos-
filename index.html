@@ -269,6 +269,12 @@ body{margin:0;font-family:var(--sans);background:#0B0F0C;display:flex;justify-co
 <div class="modal-fundo" id="modal-gasto">
   <div class="modal-cartao">
     <h3>Novo gasto</h3>
+    <div class="campo"><label>Tipo</label>
+      <select id="gasto-tipo">
+        <option value="saida">Saída (gasto)</option>
+        <option value="entrada">Entrada (receita)</option>
+      </select>
+    </div>
     <div class="campo"><label>Descrição</label><input type="text" id="gasto-descricao" placeholder="Ex: Supermercado"></div>
     <div class="campo"><label>Valor (R$)</label><input type="text" id="gasto-valor" placeholder="0,00" inputmode="decimal"></div>
     <div class="campo"><label>Categoria</label>
@@ -429,14 +435,14 @@ function atualizarFotoPerfil(){const foto=chaveFotoPerfil()?localStorage.getItem
 function alterarFotoPerfil(e){const a=e.target.files?.[0];if(!a)return;if(!a.type.startsWith('image/')){alert('Escolha um arquivo de imagem.');return}const l=new FileReader;l.onload=()=>{const i=new Image;i.onload=()=>{const t=240,s=Math.max(t/i.width,t/i.height),w=Math.round(i.width*s),h=Math.round(i.height*s),c=document.createElement('canvas');c.width=t;c.height=t;c.getContext('2d').drawImage(i,(t-w)/2,(t-h)/2,w,h);try{localStorage.setItem(chaveFotoPerfil(),c.toDataURL('image/jpeg',.82));atualizarFotoPerfil()}catch(x){alert('Não foi possível guardar esta foto. Escolha uma imagem menor.')}};i.src=l.result};l.readAsDataURL(a)}
 
 function selecionarCategoria(sel){if(sel.value!=='__nova__')return;const c=(prompt('Nome da nova categoria:')||'').trim();if(!c){sel.selectedIndex=0;return}const existente=[...sel.options].find(o=>o.value.toLowerCase()===c.toLowerCase());if(existente){existente.selected=true;return}const o=document.createElement('option');o.value=c;o.textContent=c;sel.insertBefore(o,sel.lastElementChild);o.selected=true}
-async function salvarGasto(){const descricao=document.getElementById('gasto-descricao').value.trim(),valor=valorMonetario(document.getElementById('gasto-valor').value),categoria=document.getElementById('gasto-categoria').value;if(!descricao||!valor){alert('Preencha a descrição e um valor válido.');return}const{error}=await sb.from('gastos').insert({descricao,valor,categoria});if(informarErro(error,'salvar o gasto'))return;document.getElementById('gasto-descricao').value='';document.getElementById('gasto-valor').value='';fecharModal('modal-gasto');carregarTudo()}
+async function salvarGasto(){const descricao=document.getElementById('gasto-descricao').value.trim(),valor=valorMonetario(document.getElementById('gasto-valor').value),categoria=document.getElementById('gasto-categoria').value,tipo=document.getElementById('gasto-tipo').value;if(!descricao||!valor){alert('Preencha a descrição e um valor válido.');return}const{error}=await sb.from('gastos').insert({descricao,valor,categoria,tipo});if(informarErro(error,'salvar o gasto'))return;document.getElementById('gasto-descricao').value='';document.getElementById('gasto-valor').value='';document.getElementById('gasto-tipo').value='saida';fecharModal('modal-gasto');carregarTudo()}
 async function excluirGasto(id){if(!confirm('Excluir este gasto? Esta ação não pode ser desfeita.'))return;const{error}=await sb.from('gastos').delete().eq('id',id);if(informarErro(error,'excluir o gasto'))return;carregarTudo()}
 
 function gastosDoMes(referencia=new Date()){
   return gastos.filter(g=>{if(!g.data)return false;const d=new Date(g.data);return d.getFullYear()===referencia.getFullYear()&&d.getMonth()===referencia.getMonth()});
 }
 function renderResumo(){
-  const gm=gastosDoMes();
+  const gm=gastosDoMes().filter(g=>g.tipo!=='entrada');
   const total=gm.reduce((s,g)=>s+Number(g.valor),0);
   document.getElementById('total-mes').textContent=formatarReal(total);
 
@@ -451,7 +457,7 @@ function renderResumo(){
   renderTendencia();
 
   const l=document.getElementById('lista-gastos-recentes');
-  l.innerHTML=gastos.length?gastos.slice(0,6).map(g=>`<div class="gasto-row"><div class="gasto-info"><div class="gasto-desc">${escaparHtml(g.descricao)}</div><div class="gasto-meta">${escaparHtml(g.categoria||'Outros')}</div></div><div style="display:flex;align-items:center;gap:5px"><span class="gasto-valor tabular">${formatarReal(g.valor)}</span><button class="btn-excluir" onclick="excluirGasto('${g.id}')">✕</button></div></div>`).join(''):'<div class="vazio">Nenhum gasto lançado ainda. Toque em "+ novo".</div>';
+  l.innerHTML=gastos.length?gastos.slice(0,6).map(g=>{const entrada=g.tipo==='entrada';return`<div class="gasto-row"><div class="gasto-info"><div class="gasto-desc">${escaparHtml(g.descricao)}</div><div class="gasto-meta">${escaparHtml(g.categoria||'Outros')}</div></div><div style="display:flex;align-items:center;gap:5px"><span class="gasto-valor tabular" style="color:${entrada?'var(--sage)':'var(--rust)'}">${entrada?'+':'−'}${formatarReal(g.valor)}</span><button class="btn-excluir" onclick="excluirGasto('${g.id}')">✕</button></div></div>`}).join(''):'<div class="vazio">Nenhum gasto lançado ainda. Toque em "+ novo".</div>';
 
   const lm=document.getElementById('lista-metas-resumo');
   lm.innerHTML=metas.length?metas.slice(0,3).map(m=>{const p=Math.min((Number(m.valor_atual)||0)/Number(m.valor_alvo),1);return`<div class="item-row"><div class="linha-entre"><span class="nome">${escaparHtml(m.nome)}</span><span class="detalhe tabular">${formatarReal(m.valor_atual)} / ${formatarReal(m.valor_alvo)}</span></div><div class="trilha"><div class="progresso" style="width:${p*100}%"></div></div></div>`}).join(''):'<div class="vazio">Nenhuma meta cadastrada.</div>';
@@ -474,7 +480,7 @@ function renderTendencia(){
   for(let i=5;i>=0;i--){
     const d=new Date(agora.getFullYear(),agora.getMonth()-i,1);
     labels.push(MESES[d.getMonth()]);
-    const soma=gastos.filter(g=>{if(!g.data)return false;const gd=new Date(g.data);return gd.getFullYear()===d.getFullYear()&&gd.getMonth()===d.getMonth()}).reduce((s,g)=>s+Number(g.valor),0);
+    const soma=gastos.filter(g=>{if(!g.data||g.tipo==='entrada')return false;const gd=new Date(g.data);return gd.getFullYear()===d.getFullYear()&&gd.getMonth()===d.getMonth()}).reduce((s,g)=>s+Number(g.valor),0);
     valores.push(soma);
   }
   const ctx=document.getElementById('trendChart');
