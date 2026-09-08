@@ -446,6 +446,7 @@ body{margin:0;font-family:var(--sans);background:var(--surround);display:flex;ju
     <div class="nota-seguranca" id="nota-biometria">Após salvar seu perfil, você poderá ativar o desbloqueio com Face ID/biometria deste aparelho.</div>
     <button class="modal-salvar" onclick="salvarPerfil()">Salvar perfil</button>
     <button class="modal-salvar" id="btn-biometria" style="display:none;background:var(--gold);margin-top:10px" onclick="ativarBiometria()">Ativar Face ID / biometria</button>
+    <button class="modal-salvar" id="btn-notificacoes" style="display:none;background:var(--sage);margin-top:10px" onclick="ativarNotificacoes()">Ativar notificação de vencimento</button>
     <button class="sair-perfil" onclick="sair()">Sair da conta</button>
     <div class="modal-cancelar" onclick="fecharModal('modal-perfil')">Cancelar</div>
   </div>
@@ -562,7 +563,7 @@ document.addEventListener('click',e=>{
   document.querySelectorAll('.swipe-inner.aberto').forEach(el=>{el.style.transform='';el.classList.remove('aberto')});
 });
 
-function abrirPerfil(){const p=usuarioAtual?.user_metadata?.perfil||{};document.getElementById('perfil-nome').value=p.nome||'';document.getElementById('perfil-telefone').value=p.telefone||'';document.getElementById('perfil-renda').value=p.renda||'';document.getElementById('perfil-objetivo').value=p.objetivo||'';document.getElementById('perfil-modal-email').textContent=usuarioAtual?.email||'';atualizarFotoPerfil();const b=document.getElementById('btn-biometria');b.style.display=window.PublicKeyCredential&&location.hostname?'block':'none';document.getElementById('nota-biometria').textContent=biometriaAtiva()?'Biometria ativa neste aparelho. O Face ID será solicitado ao abrir o app.':window.PublicKeyCredential&&location.hostname?'Ative o Face ID/biometria deste aparelho após salvar. Seus dados biométricos não são enviados ao app.':'A biometria só pode ser ativada quando o app estiver publicado em HTTPS.';abrirModal('modal-perfil')}
+function abrirPerfil(){const p=usuarioAtual?.user_metadata?.perfil||{};document.getElementById('perfil-nome').value=p.nome||'';document.getElementById('perfil-telefone').value=p.telefone||'';document.getElementById('perfil-renda').value=p.renda||'';document.getElementById('perfil-objetivo').value=p.objetivo||'';document.getElementById('perfil-modal-email').textContent=usuarioAtual?.email||'';atualizarFotoPerfil();const b=document.getElementById('btn-biometria');b.style.display=window.PublicKeyCredential&&location.hostname?'block':'none';document.getElementById('nota-biometria').textContent=biometriaAtiva()?'Biometria ativa neste aparelho. O Face ID será solicitado ao abrir o app.':window.PublicKeyCredential&&location.hostname?'Ative o Face ID/biometria deste aparelho após salvar. Seus dados biométricos não são enviados ao app.':'A biometria só pode ser ativada quando o app estiver publicado em HTTPS.';const bn=document.getElementById('btn-notificacoes');if(bn)bn.style.display=('serviceWorker'in navigator&&'PushManager'in window)?'block':'none';abrirModal('modal-perfil')}
 async function salvarPerfil(){if(!usuarioAtual)return;const perfil={nome:document.getElementById('perfil-nome').value.trim(),telefone:document.getElementById('perfil-telefone').value.trim(),renda:document.getElementById('perfil-renda').value.trim(),objetivo:document.getElementById('perfil-objetivo').value.trim()},r=await sb.auth.updateUser({data:{...usuarioAtual.user_metadata,perfil}});if(informarErro(r.error,'salvar seu perfil'))return;usuarioAtual=r.data.user;atualizarFotoPerfil();alert('Perfil salvo com sucesso.');fecharModal('modal-perfil')}
 function bytesAleatorios(){const b=new Uint8Array(32);crypto.getRandomValues(b);return b}
 async function ativarBiometria(){if(!usuarioAtual||!window.PublicKeyCredential||!location.hostname){alert('A biometria estará disponível no link publicado do app.');return}try{await navigator.credentials.create({publicKey:{challenge:bytesAleatorios(),rp:{name:'Gestão de Gastos',id:location.hostname},user:{id:new TextEncoder().encode(usuarioAtual.id),name:usuarioAtual.email||usuarioAtual.id,displayName:usuarioAtual.user_metadata?.perfil?.nome||usuarioAtual.email||'Usuário'},pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],authenticatorSelection:{residentKey:'required',userVerification:'required'},timeout:60000}});localStorage.setItem(chaveBiometria(),'true');alert('Biometria ativada neste aparelho. Na próxima abertura, use o Face ID para desbloquear o app.');fecharModal('modal-perfil')}catch(e){console.error(e);alert('A biometria não foi ativada. Verifique se o Face ID está configurado neste aparelho.')}}
@@ -571,6 +572,23 @@ let travado=false;
 function mostrarBloqueio(){travado=true;document.getElementById('tela-bloqueio').style.display='flex';tentarDesbloquear()}
 async function tentarDesbloquear(){const ok=await verificarBiometria();if(ok){travado=false;document.getElementById('tela-bloqueio').style.display='none'}}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&usuarioAtual&&biometriaAtiva()&&!travado)mostrarBloqueio()});
+
+const VAPID_PUBLIC_KEY='BOlsqHdImQ2kMW6ZZx8qS7LToRNGwis9cZ07b6K7p8P13iuWrsYRVT9jDX7TF3UCTtKSzEMO-hSm9DqyVz0-l8Q';
+function urlBase64ToUint8Array(base64String){const padding='='.repeat((4-base64String.length%4)%4);const base64=(base64String+padding).replace(/-/g,'+').replace(/_/g,'/');const rawData=atob(base64);const outputArray=new Uint8Array(rawData.length);for(let i=0;i<rawData.length;++i)outputArray[i]=rawData.charCodeAt(i);return outputArray}
+async function ativarNotificacoes(){
+  if(!('serviceWorker'in navigator)||!('PushManager'in window)){alert('Seu navegador não suporta notificações push.');return}
+  const perm=await Notification.requestPermission();
+  if(perm!=='granted'){alert('Permissão de notificação não concedida.');return}
+  try{
+    const reg=await navigator.serviceWorker.ready;
+    let sub=await reg.pushManager.getSubscription();
+    if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:urlBase64ToUint8Array(VAPID_PUBLIC_KEY)});
+    const json=sub.toJSON();
+    const{error}=await sb.from('push_subscriptions').upsert({endpoint:json.endpoint,p256dh:json.keys.p256dh,auth:json.keys.auth},{onConflict:'endpoint'});
+    if(informarErro(error,'ativar as notificações'))return;
+    alert('Notificações ativadas! Você será avisado 3 dias antes de cada assinatura vencer, mesmo com o app fechado.');
+  }catch(e){console.error(e);alert('Não foi possível ativar as notificações neste aparelho.')}
+}
 function chaveBiometria(){return usuarioAtual?'biometria-ativa-'+usuarioAtual.id:''}
 function biometriaAtiva(){return!!chaveBiometria()&&localStorage.getItem(chaveBiometria())==='true'}
 function chaveFotoPerfil(){return usuarioAtual?'foto-perfil-'+usuarioAtual.id:''}
