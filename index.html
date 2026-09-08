@@ -90,6 +90,18 @@ body{margin:0;font-family:var(--sans);background:#D9D2C0;display:flex;justify-co
 .trilha{height:7px;background:var(--paper);border-radius:5px;overflow:hidden}
 .progresso{height:7px;background:var(--sage)}
 .progresso.gold{background:var(--gold)}
+.progresso.rust{background:var(--rust)}
+.alerta-strip{background:var(--gold-soft);color:var(--gold);font-size:11.5px;padding:9px 12px;border-radius:9px;font-weight:600;margin-bottom:12px}
+.assinatura-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.assinatura-row:last-child{border-bottom:0}
+.assinatura-ico{width:30px;height:30px;border-radius:8px;flex-shrink:0;background:var(--sage);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px}
+.assinatura-info{flex:1;min-width:0}
+.assinatura-info b{font-size:13px;display:block}
+.assinatura-info small{color:var(--ink-soft);font-size:11px}
+.kpi-row{display:flex;gap:10px;margin-bottom:14px}
+.kpi{flex:1;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.kpi span{display:block;font-size:10.5px;color:var(--ink-soft)}
+.kpi b{font-size:16px;font-family:var(--serif)}
 .link-acao{color:var(--ink);text-decoration:underline;font-size:12px;margin-top:8px;display:inline-block;cursor:pointer;font-weight:600}
 
 .btn-flutuante{background:var(--ink);color:var(--paper);border:none;border-radius:30px;padding:14px;width:100%;font-weight:700;font-size:14.5px;margin-top:4px;cursor:pointer}
@@ -182,6 +194,9 @@ body{margin:0;font-family:var(--sans);background:#D9D2C0;display:flex;justify-co
       <div id="conteudo-categorias"></div>
     </div>
 
+    <div class="section-title">Orçamentos do mês</div>
+    <div class="card" id="lista-orcamentos"></div>
+
     <div class="section-title">Evolução (6 meses)</div>
     <div class="card"><div class="chart-wrap" style="height:150px"><canvas id="trendChart"></canvas></div></div>
 
@@ -221,12 +236,25 @@ body{margin:0;font-family:var(--sans);background:#D9D2C0;display:flex;justify-co
   </div>
 </div>
 
+<div class="screen" id="tela-assinaturas">
+  <div class="content">
+    <div class="section-title">Assinaturas e recorrências<button class="adicionar" onclick="abrirModal('modal-assinatura')">+ Nova</button></div>
+    <div class="kpi-row">
+      <div class="kpi"><span>Custo mensal</span><b class="tabular" id="assinaturas-mensal">R$ 0,00</b></div>
+      <div class="kpi"><span>Custo anual</span><b class="tabular" id="assinaturas-anual">R$ 0,00</b></div>
+    </div>
+    <div id="alertas-assinaturas"></div>
+    <div class="card" id="lista-assinaturas"></div>
+  </div>
+</div>
+
 <div class="tabbar" id="tabbar" style="display:none">
   <div class="tab active" data-tela="tela-resumo" onclick="irPara('tela-resumo',this)"><span class="icone">📒</span>Resumo</div>
   <div class="tab" data-tela="tela-contas" onclick="irPara('tela-contas',this)"><span class="icone">🏦</span>Contas</div>
   <div class="tab" data-tela="tela-dividas" onclick="irPara('tela-dividas',this)"><span class="icone">📄</span>Dívidas</div>
   <div class="tab" data-tela="tela-metas" onclick="irPara('tela-metas',this)"><span class="icone">🎯</span>Metas</div>
   <div class="tab" data-tela="tela-cartoes" onclick="irPara('tela-cartoes',this)"><span class="icone">💳</span>Cartões</div>
+  <div class="tab" data-tela="tela-assinaturas" onclick="irPara('tela-assinaturas',this)"><span class="icone">🔔</span>Assinaturas</div>
 </div>
 
 <div class="perfil-popup" id="perfil-popup">
@@ -242,10 +270,11 @@ body{margin:0;font-family:var(--sans);background:#D9D2C0;display:flex;justify-co
     <div class="campo"><label>Descrição</label><input type="text" id="gasto-descricao" placeholder="Ex: Supermercado"></div>
     <div class="campo"><label>Valor (R$)</label><input type="text" id="gasto-valor" placeholder="0,00" inputmode="decimal"></div>
     <div class="campo"><label>Categoria</label>
-      <select id="gasto-categoria">
+      <select id="gasto-categoria" onchange="selecionarCategoria(this)">
         <option>Moradia</option><option>Alimentação</option><option>Transporte</option>
         <option>Contas fixas</option><option>Cartão de crédito</option><option>Lazer</option>
         <option>Saúde</option><option>Outros</option>
+        <option value="__nova__">+ Nova categoria…</option>
       </select>
     </div>
     <button class="modal-salvar" onclick="salvarGasto()">Salvar gasto</button>
@@ -298,8 +327,28 @@ body{margin:0;font-family:var(--sans);background:#D9D2C0;display:flex;justify-co
     <div class="campo"><label>Nome do cartão</label><input type="text" id="cartao-nome" placeholder="Ex: Nubank"></div>
     <div class="campo"><label>Banco</label><input type="text" id="cartao-banco" placeholder="Ex: Nubank"></div>
     <div class="campo"><label>Limite total (R$)</label><input type="text" id="cartao-limite" placeholder="0,00" inputmode="decimal"></div>
+    <div class="campo"><label>Dia de fechamento da fatura</label><input type="text" id="cartao-fechamento" placeholder="Ex: 22" inputmode="numeric"></div>
+    <div class="campo"><label>Dia de vencimento da fatura</label><input type="text" id="cartao-vencimento" placeholder="Ex: 29" inputmode="numeric"></div>
     <button class="modal-salvar" onclick="salvarCartao()">Salvar cartão</button>
     <div class="modal-cancelar" onclick="fecharModal('modal-cartao')">Cancelar</div>
+  </div>
+</div>
+
+<div class="modal-fundo" id="modal-assinatura">
+  <div class="modal-cartao">
+    <h3>Nova assinatura</h3>
+    <div class="campo"><label>Nome</label><input type="text" id="assinatura-nome" placeholder="Ex: Netflix, Aluguel, Academia"></div>
+    <div class="campo"><label>Valor (R$)</label><input type="text" id="assinatura-valor" placeholder="0,00" inputmode="decimal"></div>
+    <div class="campo"><label>Ciclo de cobrança</label>
+      <select id="assinatura-ciclo" onchange="document.getElementById('campo-mes-cobranca').style.display=this.value==='anual'?'block':'none'">
+        <option value="mensal">Mensal</option>
+        <option value="anual">Anual</option>
+      </select>
+    </div>
+    <div class="campo"><label>Dia da cobrança</label><input type="text" id="assinatura-dia" placeholder="Ex: 10" inputmode="numeric"></div>
+    <div class="campo" id="campo-mes-cobranca" style="display:none"><label>Mês da cobrança (se anual)</label><input type="text" id="assinatura-mes" placeholder="Ex: 3 (março)" inputmode="numeric"></div>
+    <button class="modal-salvar" onclick="salvarAssinatura()">Salvar assinatura</button>
+    <div class="modal-cancelar" onclick="fecharModal('modal-assinatura')">Cancelar</div>
   </div>
 </div>
 
@@ -325,8 +374,9 @@ body{margin:0;font-family:var(--sans);background:#D9D2C0;display:flex;justify-co
 </div>
 <script>
 const SUPABASE_URL="https://lcuaphodobwotxplcskn.supabase.co",SUPABASE_KEY="sb_publishable_30RHQ3b_M9lS0rsUb8DXzA_wY435XUk",sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-let gastos=[],dividas=[],metas=[],cartoes=[],contas=[],modoCadastro=false,usuarioAtual=null,catChartInst=null,trendChartInst=null;
+let gastos=[],dividas=[],metas=[],cartoes=[],contas=[],orcamentos=[],assinaturas=[],modoCadastro=false,usuarioAtual=null,catChartInst=null,trendChartInst=null;
 const TIPOS_CONTA={corrente:'Conta corrente',poupanca:'Poupança',investimento:'Investimento',carteira_digital:'Carteira digital'};
+const CATEGORIAS_PADRAO=['Moradia','Alimentação','Transporte','Contas fixas','Cartão de crédito','Lazer','Saúde','Outros'];
 const CORES=['#A8462F','#B08A3E','#3F6B52','#5B6473','#7A3B3B','#8C6BAF','#2E7D6B','#3B6FA0'];
 const MESES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
 
@@ -353,10 +403,10 @@ async function mostrarApp(){
   await carregarTudo();
 }
 async function carregarTudo(){
-  const[a,b,c,d,e]=await Promise.all([sb.from('gastos').select('*').order('data',{ascending:false}),sb.from('dividas').select('*'),sb.from('metas').select('*'),sb.from('cartoes').select('*,compras:compras_cartao(*)').order('created_at',{ascending:true}),sb.from('contas').select('*').order('created_at',{ascending:true})]);
-  if(informarErro(a.error,'carregar os gastos')||informarErro(b.error,'carregar as dívidas')||informarErro(c.error,'carregar as metas')||informarErro(d.error,'carregar os cartões')||informarErro(e.error,'carregar as contas'))return;
-  gastos=a.data||[];dividas=b.data||[];metas=c.data||[];cartoes=d.data||[];contas=e.data||[];
-  renderResumo();renderDividas();renderMetas();renderCartoes();renderContas();
+  const[a,b,c,d,e,f,g]=await Promise.all([sb.from('gastos').select('*').order('data',{ascending:false}),sb.from('dividas').select('*'),sb.from('metas').select('*'),sb.from('cartoes').select('*,compras:compras_cartao(*)').order('created_at',{ascending:true}),sb.from('contas').select('*').order('created_at',{ascending:true}),sb.from('orcamentos').select('*'),sb.from('assinaturas').select('*').order('created_at',{ascending:true})]);
+  if(informarErro(a.error,'carregar os gastos')||informarErro(b.error,'carregar as dívidas')||informarErro(c.error,'carregar as metas')||informarErro(d.error,'carregar os cartões')||informarErro(e.error,'carregar as contas')||informarErro(f.error,'carregar os orçamentos')||informarErro(g.error,'carregar as assinaturas'))return;
+  gastos=a.data||[];dividas=b.data||[];metas=c.data||[];cartoes=d.data||[];contas=e.data||[];orcamentos=f.data||[];assinaturas=g.data||[];
+  renderResumo();renderDividas();renderMetas();renderCartoes();renderContas();renderOrcamentos();renderAssinaturas();
 }
 function irPara(id,tab){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));tab.classList.add('active')}
 function abrirModal(id){document.getElementById(id).classList.add('aberto')}
@@ -376,20 +426,25 @@ function chaveFotoPerfil(){return usuarioAtual?'foto-perfil-'+usuarioAtual.id:''
 function atualizarFotoPerfil(){const foto=chaveFotoPerfil()?localStorage.getItem(chaveFotoPerfil()):'',mini=document.getElementById('perfil-mini'),preview=document.getElementById('perfil-foto-preview'),iniciais=(usuarioAtual?.user_metadata?.perfil?.nome||usuarioAtual?.email||'MP').split(/\s|@/).filter(Boolean).slice(0,2).map(p=>p[0]).join('').toUpperCase();if(mini)mini.innerHTML=foto?`<img src="${foto}" alt="Foto do perfil">`:iniciais;if(preview)preview.innerHTML=foto?`<img src="${foto}" alt="Foto do perfil">`:'Adicionar foto'}
 function alterarFotoPerfil(e){const a=e.target.files?.[0];if(!a)return;if(!a.type.startsWith('image/')){alert('Escolha um arquivo de imagem.');return}const l=new FileReader;l.onload=()=>{const i=new Image;i.onload=()=>{const t=240,s=Math.max(t/i.width,t/i.height),w=Math.round(i.width*s),h=Math.round(i.height*s),c=document.createElement('canvas');c.width=t;c.height=t;c.getContext('2d').drawImage(i,(t-w)/2,(t-h)/2,w,h);try{localStorage.setItem(chaveFotoPerfil(),c.toDataURL('image/jpeg',.82));atualizarFotoPerfil()}catch(x){alert('Não foi possível guardar esta foto. Escolha uma imagem menor.')}};i.src=l.result};l.readAsDataURL(a)}
 
+function selecionarCategoria(sel){if(sel.value!=='__nova__')return;const c=(prompt('Nome da nova categoria:')||'').trim();if(!c){sel.selectedIndex=0;return}const existente=[...sel.options].find(o=>o.value.toLowerCase()===c.toLowerCase());if(existente){existente.selected=true;return}const o=document.createElement('option');o.value=c;o.textContent=c;sel.insertBefore(o,sel.lastElementChild);o.selected=true}
 async function salvarGasto(){const descricao=document.getElementById('gasto-descricao').value.trim(),valor=valorMonetario(document.getElementById('gasto-valor').value),categoria=document.getElementById('gasto-categoria').value;if(!descricao||!valor){alert('Preencha a descrição e um valor válido.');return}const{error}=await sb.from('gastos').insert({descricao,valor,categoria});if(informarErro(error,'salvar o gasto'))return;document.getElementById('gasto-descricao').value='';document.getElementById('gasto-valor').value='';fecharModal('modal-gasto');carregarTudo()}
 async function excluirGasto(id){if(!confirm('Excluir este gasto? Esta ação não pode ser desfeita.'))return;const{error}=await sb.from('gastos').delete().eq('id',id);if(informarErro(error,'excluir o gasto'))return;carregarTudo()}
 
+function gastosDoMes(referencia=new Date()){
+  return gastos.filter(g=>{if(!g.data)return false;const d=new Date(g.data);return d.getFullYear()===referencia.getFullYear()&&d.getMonth()===referencia.getMonth()});
+}
 function renderResumo(){
-  const total=gastos.reduce((s,g)=>s+Number(g.valor),0);
+  const gm=gastosDoMes();
+  const total=gm.reduce((s,g)=>s+Number(g.valor),0);
   document.getElementById('total-mes').textContent=formatarReal(total);
 
   const totalContas=contas.reduce((s,c)=>s+Number(c.saldo_atual),0);
-  const totalFaturasAbertas=cartoes.reduce((s,c)=>s+(c.compras||[]).reduce((s2,x)=>s2+Number(x.valor),0),0);
+  const totalFaturasAbertas=cartoes.reduce((s,c)=>s+faturaAtualCartao(c),0);
   document.getElementById('total-contas').textContent=formatarReal(totalContas);
   document.getElementById('patrimonio-liquido').textContent=formatarReal(totalContas-totalFaturasAbertas);
 
   const pc={};
-  gastos.forEach(g=>{const cat=g.categoria||'Outros';pc[cat]=(pc[cat]||0)+Number(g.valor)});
+  gm.forEach(g=>{const cat=g.categoria||'Outros';pc[cat]=(pc[cat]||0)+Number(g.valor)});
   renderCategorias(pc,total);
   renderTendencia();
 
@@ -433,10 +488,26 @@ async function salvarMeta(){const nome=document.getElementById('meta-nome').valu
 async function aportar(id){const v=valorMonetario(prompt('Quanto você quer guardar nesta meta? (R$)'));if(!v)return;const m=metas.find(x=>x.id===id);if(!m)return;const{error}=await sb.from('metas').update({valor_atual:Number(m.valor_atual)+v}).eq('id',id);if(informarErro(error,'registrar o aporte'))return;carregarTudo()}
 function renderMetas(){const l=document.getElementById('lista-metas');if(!metas.length){l.innerHTML='<div class="card"><div class="vazio">Nenhuma meta cadastrada.</div></div>';return}l.innerHTML=metas.map(m=>{const p=Math.min((Number(m.valor_atual)||0)/Number(m.valor_alvo),1),a=p>=1;return`<div class="card item-row"><div class="linha-entre"><span class="nome">${escaparHtml(m.nome)}</span><span class="status ${a?'quitada':'pendente'}">${a?'Atingida':Math.round(p*100)+'%'}</span></div><div class="detalhe tabular">${formatarReal(m.valor_atual)} de ${formatarReal(m.valor_alvo)}</div><div class="trilha"><div class="progresso" style="width:${p*100}%"></div></div>${!a?`<span class="link-acao" onclick="aportar('${m.id}')">Guardar dinheiro nesta meta</span>`:''}</div>`}).join('')}
 
-async function salvarCartao(){const nome=document.getElementById('cartao-nome').value.trim(),banco=document.getElementById('cartao-banco').value.trim(),limite=valorMonetario(document.getElementById('cartao-limite').value);if(!nome||!limite){alert('Informe o nome e o limite do cartão.');return}const{error}=await sb.from('cartoes').insert({nome,banco,limite});if(informarErro(error,'salvar o cartão'))return;document.getElementById('cartao-nome').value='';document.getElementById('cartao-banco').value='';document.getElementById('cartao-limite').value='';fecharModal('modal-cartao');carregarTudo()}
-async function novaCompraCartao(id){const nome=prompt('Descrição da compra:');if(!nome)return;const v=valorMonetario(prompt('Valor total da compra (R$):',''));if(!v)return;const parcelas=Math.max(1,parseInt(prompt('Número de parcelas (1 para compra à vista):','1'))||1);const{error}=await sb.from('compras_cartao').insert({cartao_id:id,nome,valor:v,parcelas,atual:1});if(informarErro(error,'salvar a compra'))return;carregarTudo()}
+function mesesEntre(a,b){const d1=new Date(a),d2=new Date(b);return(d2.getFullYear()-d1.getFullYear())*12+(d2.getMonth()-d1.getMonth())}
+function valorParcela(x){return Number(x.valor_total)/Number(x.parcelas)}
+function parcelaNumero(x,referencia=new Date()){return mesesEntre(x.data_compra,referencia)+1}
+function compraAtivaEm(x,referencia=new Date()){const n=parcelaNumero(x,referencia);return n>=1&&n<=x.parcelas}
+function faturaAtualCartao(c){return(c.compras||[]).filter(x=>compraAtivaEm(x)).reduce((s,x)=>s+valorParcela(x),0)}
+function comprometidoCartao(c){return(c.compras||[]).reduce((s,x)=>{const n=parcelaNumero(x);const restantes=Math.max(0,Math.min(x.parcelas,x.parcelas-n+1));return n>x.parcelas?s:s+valorParcela(x)*restantes},0)}
+async function salvarCartao(){const nome=document.getElementById('cartao-nome').value.trim(),banco=document.getElementById('cartao-banco').value.trim(),limite=valorMonetario(document.getElementById('cartao-limite').value),dia_fechamento=parseInt(document.getElementById('cartao-fechamento').value)||null,dia_vencimento=parseInt(document.getElementById('cartao-vencimento').value)||null;if(!nome||!limite){alert('Informe o nome e o limite do cartão.');return}const{error}=await sb.from('cartoes').insert({nome,banco,limite,dia_fechamento,dia_vencimento});if(informarErro(error,'salvar o cartão'))return;document.getElementById('cartao-nome').value='';document.getElementById('cartao-banco').value='';document.getElementById('cartao-limite').value='';document.getElementById('cartao-fechamento').value='';document.getElementById('cartao-vencimento').value='';fecharModal('modal-cartao');carregarTudo()}
+async function novaCompraCartao(id){const nome=prompt('Descrição da compra:');if(!nome)return;const v=valorMonetario(prompt('Valor total da compra (R$):',''));if(!v)return;const parcelas=Math.max(1,parseInt(prompt('Número de parcelas (1 para compra à vista):','1'))||1);const{error}=await sb.from('compras_cartao').insert({cartao_id:id,nome,valor_total:v,parcelas,data_compra:new Date().toISOString().slice(0,10)});if(informarErro(error,'salvar a compra'))return;carregarTudo()}
 async function excluirCartao(id){if(!confirm('Excluir este cartão? As compras lançadas nele também serão removidas.'))return;const{error}=await sb.from('cartoes').delete().eq('id',id);if(informarErro(error,'excluir o cartão'))return;carregarTudo()}
-function renderCartoes(){const box=document.getElementById('lista-cartoes');if(!box)return;const a=cartoes;if(!a.length){box.innerHTML='<div class="card"><div class="vazio">Nenhum cartão cadastrado. Toque em "+ Novo".</div></div>';return}box.innerHTML=a.map(c=>{const usado=c.compras.reduce((s,x)=>s+x.valor,0),disp=Math.max(0,c.limite-usado);return`<div class="cartao-visual"><div class="cartao-topo"><div><div class="cartao-nome">${escaparHtml(c.nome)}</div><div class="cartao-banco">${escaparHtml(c.banco||'Cartão de crédito')}</div></div><span>💳</span></div><div class="cartao-limite"><small>Limite total</small><strong class="tabular">${formatarReal(c.limite)}</strong></div><div class="cartao-info"><div><small>Utilizado</small><b class="tabular">${formatarReal(usado)}</b></div><div><small>Disponível</small><b class="tabular">${formatarReal(disp)}</b></div></div></div><div class="card"><h3 style="margin:0 0 10px;font-family:var(--serif);font-size:14.5px">Compras</h3>${c.compras.length?c.compras.map(x=>`<div class="compra-row"><div><b>${escaparHtml(x.nome)}</b>${x.parcelas>1?`<span class="parcelas-tag">${x.atual}/${x.parcelas} parcelas</span>`:'<small>À vista</small>'}</div><strong class="tabular">${formatarReal(x.valor)}</strong></div>`).join(''):'<div class="vazio">Nenhuma compra cadastrada.</div>'}<div class="cartao-acoes"><button onclick="novaCompraCartao('${c.id}')">+ Compra</button><button onclick="excluirCartao('${c.id}')">Excluir</button></div></div>`}).join('')}
+function renderCartoes(){const box=document.getElementById('lista-cartoes');if(!box)return;const a=cartoes;if(!a.length){box.innerHTML='<div class="card"><div class="vazio">Nenhum cartão cadastrado. Toque em "+ Novo".</div></div>';return}box.innerHTML=a.map(c=>{const faturaAtual=faturaAtualCartao(c),comprometido=comprometidoCartao(c),disp=Math.max(0,c.limite-comprometido),pctUsado=c.limite?Math.min(100,comprometido/c.limite*100):0,ciclo=c.dia_fechamento&&c.dia_vencimento?`Fecha dia ${c.dia_fechamento} · vence dia ${c.dia_vencimento}`:'Defina o ciclo de fechamento e vencimento';return`<div class="cartao-visual"><div class="cartao-topo"><div><div class="cartao-nome">${escaparHtml(c.nome)}</div><div class="cartao-banco">${escaparHtml(c.banco||'Cartão de crédito')}</div></div><span>💳</span></div><div class="cartao-limite"><small>Fatura atual · ${ciclo}</small><strong class="tabular">${formatarReal(faturaAtual)}</strong></div><div class="cartao-info"><div><small>Comprometido</small><b class="tabular">${formatarReal(comprometido)}</b></div><div><small>Disponível</small><b class="tabular">${formatarReal(disp)}</b></div></div><div class="trilha" style="margin-top:10px;background:rgba(255,255,255,.25)"><div class="progresso" style="width:${pctUsado}%;background:#fff"></div></div></div><div class="card"><h3 style="margin:0 0 10px;font-family:var(--serif);font-size:14.5px">Compras parceladas</h3>${(c.compras||[]).length?c.compras.map(x=>{const n=parcelaNumero(x),quitada=n>x.parcelas;return`<div class="compra-row"><div><b>${escaparHtml(x.nome)}</b>${x.parcelas>1?`<span class="parcelas-tag">${quitada?'quitada':Math.max(1,n)+'/'+x.parcelas+' parcelas'}</span>`:'<small>À vista</small>'}</div><strong class="tabular">${formatarReal(valorParcela(x))}</strong></div>`}).join(''):'<div class="vazio">Nenhuma compra cadastrada.</div>'}<div class="cartao-acoes"><button onclick="novaCompraCartao('${c.id}')">+ Compra</button><button onclick="excluirCartao('${c.id}')">Excluir</button></div></div>`}).join('')}
+
+const NOMES_MES_ABREV=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+function renderOrcamentos(){const box=document.getElementById('lista-orcamentos');if(!box)return;const gm=gastosDoMes();const porCat={};gm.forEach(g=>{const c=g.categoria||'Outros';porCat[c]=(porCat[c]||0)+Number(g.valor)});const cats=[...new Set([...CATEGORIAS_PADRAO,...orcamentos.map(o=>o.categoria),...Object.keys(porCat)])];box.innerHTML=cats.map(cat=>{const orc=orcamentos.find(o=>o.categoria===cat);const gasto=porCat[cat]||0;if(!orc)return`<div class="item-row"><div class="linha-entre"><span class="nome">${escaparHtml(cat)}</span><span class="link-acao" onclick="definirOrcamento('${escaparHtml(cat)}')">Definir teto</span></div>${gasto?`<div class="detalhe tabular">${formatarReal(gasto)} gastos neste mês</div>`:''}</div>`;const p=gasto/Number(orc.valor_limite);const cor=p>=1?'rust':p>=0.7?'gold':'';return`<div class="item-row"><div class="linha-entre"><span class="nome">${escaparHtml(cat)}</span><span class="detalhe tabular">${formatarReal(gasto)} / ${formatarReal(orc.valor_limite)}</span></div><div class="trilha"><div class="progresso ${cor}" style="width:${Math.min(p*100,100)}%"></div></div><span class="link-acao" onclick="definirOrcamento('${escaparHtml(cat)}')">Editar teto</span></div>`}).join('')||'<div class="vazio">Nenhuma categoria com gasto ou orçamento ainda.</div>'}
+async function definirOrcamento(categoria){const atual=orcamentos.find(o=>o.categoria===categoria);const entrada=prompt('Teto mensal para "'+categoria+'" (R$):',atual?String(atual.valor_limite):'');if(entrada===null)return;const v=valorMonetario(entrada);if(!v){if(atual&&confirm('Remover o orçamento desta categoria?')){const{error}=await sb.from('orcamentos').delete().eq('id',atual.id);if(informarErro(error,'remover o orçamento'))return;carregarTudo()}return}const{error}=await sb.from('orcamentos').upsert({categoria,valor_limite:v},{onConflict:'user_id,categoria'});if(informarErro(error,'salvar o orçamento'))return;carregarTudo()}
+
+function proximaCobranca(a,referencia=new Date()){if(a.ciclo==='anual'){let ano=referencia.getFullYear();let d=new Date(ano,(a.mes_cobranca||1)-1,a.dia_cobranca);if(d<referencia)d=new Date(ano+1,(a.mes_cobranca||1)-1,a.dia_cobranca);return d}let d=new Date(referencia.getFullYear(),referencia.getMonth(),a.dia_cobranca);if(d<referencia)d=new Date(referencia.getFullYear(),referencia.getMonth()+1,a.dia_cobranca);return d}
+function diasAte(d){return Math.ceil((d-new Date())/86400000)}
+async function salvarAssinatura(){const nome=document.getElementById('assinatura-nome').value.trim(),valor=valorMonetario(document.getElementById('assinatura-valor').value),ciclo=document.getElementById('assinatura-ciclo').value,dia_cobranca=Math.min(31,Math.max(1,parseInt(document.getElementById('assinatura-dia').value)||1)),mes_cobranca=ciclo==='anual'?Math.min(12,Math.max(1,parseInt(document.getElementById('assinatura-mes').value)||1)):null;if(!nome||!valor){alert('Preencha o nome e o valor.');return}const{error}=await sb.from('assinaturas').insert({nome,valor,ciclo,dia_cobranca,mes_cobranca});if(informarErro(error,'salvar a assinatura'))return;document.getElementById('assinatura-nome').value='';document.getElementById('assinatura-valor').value='';document.getElementById('assinatura-dia').value='';document.getElementById('assinatura-mes').value='';fecharModal('modal-assinatura');carregarTudo()}
+async function excluirAssinatura(id){if(!confirm('Excluir esta assinatura?'))return;const{error}=await sb.from('assinaturas').delete().eq('id',id);if(informarErro(error,'excluir a assinatura'))return;carregarTudo()}
+function renderAssinaturas(){const box=document.getElementById('lista-assinaturas'),alertas=document.getElementById('alertas-assinaturas');if(!box)return;const ativas=assinaturas.filter(a=>a.ativo!==false);const totalMensal=ativas.reduce((s,a)=>s+(a.ciclo==='anual'?Number(a.valor)/12:Number(a.valor)),0);const totalAnual=ativas.reduce((s,a)=>s+(a.ciclo==='anual'?Number(a.valor):Number(a.valor)*12),0);document.getElementById('assinaturas-mensal').textContent=formatarReal(totalMensal);document.getElementById('assinaturas-anual').textContent=formatarReal(totalAnual);const proximas=ativas.map(a=>({a,d:proximaCobranca(a),dias:diasAte(proximaCobranca(a))})).filter(x=>x.dias<=3);alertas.innerHTML=proximas.length?proximas.map(x=>`<div class="alerta-strip">⏰ ${escaparHtml(x.a.nome)} vence ${x.dias<=0?'hoje':'em '+x.dias+' dia(s)'} — ${formatarReal(x.a.valor)}</div>`).join(''):'';if(!assinaturas.length){box.innerHTML='<div class="vazio">Nenhuma assinatura cadastrada. Toque em "+ Nova".</div>';return}box.innerHTML=assinaturas.map(a=>{const prox=proximaCobranca(a);return`<div class="assinatura-row"><div class="assinatura-ico">${escaparHtml(a.nome.slice(0,1).toUpperCase())}</div><div class="assinatura-info"><b>${escaparHtml(a.nome)}</b><small>${a.ciclo==='anual'?'anual':'mensal'} · próxima em ${prox.getDate()}/${prox.getMonth()+1}</small></div><span class="tabular" style="font-weight:700;font-size:12.5px">${formatarReal(a.valor)}</span><button class="btn-excluir" onclick="excluirAssinatura('${a.id}')">✕</button></div>`}).join('')}
 async function salvarConta(){const instituicao=document.getElementById('conta-instituicao').value.trim(),tipo=document.getElementById('conta-tipo').value,saldo_atual=valorMonetario(document.getElementById('conta-saldo').value);if(!instituicao){alert('Informe a instituição.');return}const{error}=await sb.from('contas').insert({instituicao,tipo,saldo_atual});if(informarErro(error,'salvar a conta'))return;document.getElementById('conta-instituicao').value='';document.getElementById('conta-saldo').value='';fecharModal('modal-conta');carregarTudo()}
 async function excluirConta(id){if(!confirm('Excluir esta conta?'))return;const{error}=await sb.from('contas').delete().eq('id',id);if(informarErro(error,'excluir a conta'))return;carregarTudo()}
 function renderContas(){const l=document.getElementById('lista-contas');if(!l)return;if(!contas.length){l.innerHTML='<div class="vazio">Nenhuma conta cadastrada. Toque em "+ Nova".</div>';return}l.innerHTML=contas.map(c=>`<div class="conta-row"><div class="conta-info"><div class="conta-nome">${escaparHtml(c.instituicao)}</div><div class="conta-tipo">${TIPOS_CONTA[c.tipo]||c.tipo}</div></div><div style="display:flex;align-items:center;gap:5px"><span class="conta-saldo tabular">${formatarReal(c.saldo_atual)}</span><button class="btn-excluir" onclick="excluirConta('${c.id}')">✕</button></div></div>`).join('')}
