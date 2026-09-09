@@ -1,5 +1,5 @@
-const CACHE='gestao-gastos-v39';
-const ASSETS=['./','./index.html','./pierre-layout.css?v=33','./ui-modern-v2.js?v=34','./ui-home-v39.js?v=39','./logo-meu-financeiro.svg?v=36','./app-icon.svg?v=35','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
+const CACHE='gestao-gastos-v40';
+const ASSETS=['./','./index.html','./pierre-layout.css?v=40','./ui-modern-v2.js?v=34','./ui-home-v39.js?v=39','./logo-meu-financeiro.svg?v=36','./app-icon.svg?v=35','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)));self.skipWaiting()});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))));self.clients.claim()});
 function adicionarLayout(response){return response.text().then(html=>{
@@ -13,7 +13,7 @@ function adicionarLayout(response){return response.text().then(html=>{
   html=html.replace(/<link[^>]*rel=["'](?:icon|shortcut icon)["'][^>]*>\s*/gi,'');
   html=html.replace(/<title>.*?<\/title>/i,'<title>Meu Financeiro</title>');
   html=html.replace(/<meta name=["']apple-mobile-web-app-title["'][^>]*>/i,'<meta name="apple-mobile-web-app-title" content="Meu Financeiro">');
-  const patch='<link rel="stylesheet" href="./pierre-layout.css?v=33">\n<script src="./ui-modern-v2.js?v=34" defer></script>\n<script src="./ui-home-v39.js?v=39" defer></script>\n<link rel="icon" type="image/svg+xml" href="./app-icon.svg?v=35">\n<link rel="apple-touch-icon" href="./app-icon.svg?v=35">\n<meta property="og:title" content="Meu Financeiro">\n<meta property="og:site_name" content="Meu Financeiro">\n<meta property="og:image" content="./app-icon.svg?v=35">\n';
+  const patch='<link rel="stylesheet" href="./pierre-layout.css?v=40">\n<script src="./ui-modern-v2.js?v=34" defer></script>\n<script src="./ui-home-v39.js?v=39" defer></script>\n<link rel="icon" type="image/svg+xml" href="./app-icon.svg?v=35">\n<link rel="apple-touch-icon" href="./app-icon.svg?v=35">\n<meta property="og:title" content="Meu Financeiro">\n<meta property="og:site_name" content="Meu Financeiro">\n<meta property="og:image" content="./app-icon.svg?v=35">\n';
   html=html.replace('</head>',patch+'</head>');
   return new Response(html,{status:response.status,statusText:response.statusText,headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'}})
 })}
