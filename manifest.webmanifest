@@ -1,12 +1,18 @@
 {
-  "name": "Gestão de Gastos",
-  "short_name": "Gastos",
-  "description": "Controle pessoal de gastos, dívidas e metas financeiras.",
+  "name": "Meu Financeiro",
+  "short_name": "Meu Financeiro",
+  "description": "Controle inteligente de gastos, cartões, assinaturas, dívidas e metas financeiras.",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#F3F6F1",
-  "theme_color": "#F3F6F1",
+  "background_color": "#F4F7F5",
+  "theme_color": "#F4F7F5",
   "icons": [
+    {
+      "src": "app-icon.svg?v=35",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
     {
       "src": "icon-192.png",
       "sizes": "192x192",
@@ -19,4 +25,3 @@
     }
   ]
 }
-
