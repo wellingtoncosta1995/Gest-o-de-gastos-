@@ -1,7 +1,7 @@
 // Cache only this app's public shell. Authenticated Supabase requests stay on the network.
 const PREFIX='meu-financeiro:'+self.registration.scope+':';
-const CACHE=PREFIX+'58';
-const ASSETS=['./','./index.html','./pierre-layout.css?v=40','./app-accessibility.css?v=58','./app-core.js?v=58','./app-v50.js?v=58','./app-subscription-logos-v56.js?v=58','./logo-meu-financeiro.svg?v=36','./app-icon.svg?v=35','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
+const CACHE=PREFIX+'59';
+const ASSETS=['./','./index.html','./pierre-layout.css?v=40','./app-accessibility.css?v=58','./app-core.js?v=58','./app-v50.js?v=58','./app-subscription-logos-v56.js?v=58','./app-settings-icon-v59.js?v=59','./logo-meu-financeiro.svg?v=36','./app-icon.svg?v=35','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 const CDN=new Set(['https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2','https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js']);
 self.addEventListener('install',event=>event.waitUntil((async()=>{
   const cache=await caches.open(CACHE);await cache.addAll(ASSETS);await self.skipWaiting();
