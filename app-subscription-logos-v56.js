@@ -23,14 +23,16 @@
   function ensureCardLogo(card,name){
     if(!card||!name)return;
     let holder=card.querySelector('.mf56-sub-logo');
+    if(holder?.dataset.name===name)return;
     if(!holder){
       holder=document.createElement('div');
       holder.className='mf56-sub-logo';
       card.insertBefore(holder,card.firstChild);
     }
+    holder.dataset.name=name;card.querySelector('.mf-sub-logo')?.remove();
     const svc=serviceFor(name);
     if(svc){
-      holder.innerHTML='<img src="'+favicon(svc.domain)+'" alt="'+esc(svc.label)+'">';
+      holder.innerHTML='<img loading="lazy" referrerpolicy="no-referrer" src="'+favicon(svc.domain)+'" alt="'+esc(svc.label)+'">';
       const img=holder.querySelector('img');
       img.onerror=()=>{holder.innerHTML='<span>'+esc(name.charAt(0).toUpperCase())+'</span>'};
     }else holder.innerHTML='<span>'+esc(name.charAt(0).toUpperCase())+'</span>';
@@ -39,7 +41,7 @@
   function apply(){
     const box=document.getElementById('lista-assinaturas');
     if(!box)return;
-    const data=Array.isArray(window.assinaturas)?window.assinaturas:[];
+    const data=typeof assinaturas!=='undefined'?assinaturas:[];
     if(data.length){
       data.forEach(a=>{
         const name=(a&&a.nome)||'';if(!name)return;
@@ -56,16 +58,7 @@
     }
   }
 
-  function start(){
-    const box=document.getElementById('lista-assinaturas');
-    if(box){
-      const obs=new MutationObserver(()=>{clearTimeout(window.__mf56logos);window.__mf56logos=setTimeout(apply,30)});
-      obs.observe(box,{childList:true,subtree:true,characterData:true});
-    }
-    apply();
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
-  [250,700,1400,2500].forEach(t=>setTimeout(apply,t));
+  window.mfApplyLogos=apply;apply();
 
   const style=document.createElement('style');
   style.textContent=`

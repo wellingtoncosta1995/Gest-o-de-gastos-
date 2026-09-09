@@ -1,18 +1,40 @@
-const CACHE='gestao-gastos-v57';
-const ASSETS=['./','./index.html','./pierre-layout.css?v=40','./app-v50.js?v=50','./app-user-fix-v51.js?v=51','./app-ui-v54.js?v=54','./app-subscription-logos-v56.js?v=56','./app-subscription-cleanup-v57.js?v=57','./logo-meu-financeiro.svg?v=36','./app-icon.svg?v=35','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
-self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)));self.skipWaiting()});
-self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))));self.clients.claim()});
-function adicionarLayout(response){return response.text().then(html=>{
-  html=html.replace(/<link[^>]*href=["'][^"']*pierre-layout\.css[^"']*["'][^>]*>\s*/gi,'');
-  html=html.replace(/<script[^>]*src=["'][^"']*(?:ui-modern-v2|ui-fix-v36|ui-home-v37|ui-home-fix-v38|ui-home-v39|ui-home-guard-v41|ui-modal-fix-v42|app-v50|app-user-fix-v51|app-ui-fix-v52|app-ui-fix-v53|app-ui-v54|app-subscription-logos-v55|app-subscription-logos-v56|app-subscription-cleanup-v57)\.js[^"']*["'][^>]*><\/script>\s*/gi,'');
-  html=html.replace(/<link[^>]*rel=["']apple-touch-icon["'][^>]*>\s*/gi,'');
-  html=html.replace(/<link[^>]*rel=["'](?:icon|shortcut icon)["'][^>]*>\s*/gi,'');
-  html=html.replace(/<title>.*?<\/title>/i,'<title>Meu Financeiro</title>');
-  html=html.replace(/<meta name=["']apple-mobile-web-app-title["'][^>]*>/i,'<meta name="apple-mobile-web-app-title" content="Meu Financeiro">');
-  const patch='<link rel="stylesheet" href="./pierre-layout.css?v=40">\n<script src="./app-v50.js?v=50" defer></script>\n<script src="./app-user-fix-v51.js?v=51" defer></script>\n<script src="./app-ui-v54.js?v=54" defer></script>\n<script src="./app-subscription-logos-v56.js?v=56" defer></script>\n<script src="./app-subscription-cleanup-v57.js?v=57" defer></script>\n<link rel="icon" type="image/svg+xml" href="./app-icon.svg?v=35">\n<link rel="apple-touch-icon" href="./app-icon.svg?v=35">\n<meta property="og:title" content="Meu Financeiro">\n<meta property="og:site_name" content="Meu Financeiro">\n<meta property="og:image" content="./app-icon.svg?v=35">\n';
-  html=html.replace('</head>',patch+'</head>');
-  return new Response(html,{status:response.status,statusText:response.statusText,headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'}})
-})}
-self.addEventListener('fetch',event=>{if(event.request.method!=='GET')return;const url=new URL(event.request.url);const isPage=event.request.mode==='navigate'||url.pathname.endsWith('/index.html');const modern=url.pathname.endsWith('/pierre-layout.css')||url.pathname.endsWith('/app-v50.js')||url.pathname.endsWith('/app-user-fix-v51.js')||url.pathname.endsWith('/app-ui-v54.js')||url.pathname.endsWith('/app-subscription-logos-v56.js')||url.pathname.endsWith('/app-subscription-cleanup-v57.js')||url.pathname.endsWith('/logo-meu-financeiro.svg')||url.pathname.endsWith('/app-icon.svg');if(isPage){event.respondWith(fetch(event.request,{cache:'no-store'}).then(response=>adicionarLayout(response.clone())).catch(()=>caches.match('./index.html').then(cached=>adicionarLayout(cached))));return}if(modern){event.respondWith(fetch(event.request,{cache:'no-store'}).catch(()=>caches.match(event.request)));return}event.respondWith(caches.match(event.request).then(cached=>cached||fetch(event.request)))});
-self.addEventListener('push',event=>{let data={title:'Meu Financeiro',body:''};try{data=event.data.json()}catch(e){if(event.data)data.body=event.data.text()}event.waitUntil(self.registration.showNotification(data.title||'Meu Financeiro',{body:data.body||'',icon:'./app-icon.svg?v=35',badge:'./app-icon.svg?v=35'}))});
-self.addEventListener('notificationclick',event=>{event.notification.close();event.waitUntil(self.clients.openWindow('./'))});
+// Cache only this app's public shell. Authenticated Supabase requests stay on the network.
+const PREFIX='meu-financeiro:'+self.registration.scope+':';
+const CACHE=PREFIX+'58';
+const ASSETS=['./','./index.html','./pierre-layout.css?v=40','./app-accessibility.css?v=58','./app-core.js?v=58','./app-v50.js?v=58','./app-subscription-logos-v56.js?v=58','./logo-meu-financeiro.svg?v=36','./app-icon.svg?v=35','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
+const CDN=new Set(['https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2','https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js']);
+self.addEventListener('install',event=>event.waitUntil((async()=>{
+  const cache=await caches.open(CACHE);await cache.addAll(ASSETS);await self.skipWaiting();
+})()));
+self.addEventListener('activate',event=>event.waitUntil((async()=>{
+  const keys=await caches.keys();await Promise.all(keys.filter(k=>k.startsWith(PREFIX)&&k!==CACHE).map(k=>caches.delete(k)));await self.clients.claim();
+})()));
+self.addEventListener('fetch',event=>{
+  if(event.request.method!=='GET')return;
+  const url=new URL(event.request.url),local=url.origin===self.location.origin&&url.href.startsWith(self.registration.scope);
+  if(!local&&!CDN.has(url.href))return;
+  if(event.request.mode==='navigate'){
+    event.respondWith((async()=>{
+      const cache=await caches.open(CACHE);
+      try{const response=await fetch(event.request);if(response.ok)await cache.put('./index.html',response.clone());return response}
+      catch(e){return await cache.match('./index.html')||new Response('Sem conexão. Conecte-se à internet para abrir o app.',{status:503,headers:{'Content-Type':'text/plain; charset=utf-8'}})}
+    })());return;
+  }
+  const known=ASSETS.some(a=>new URL(a,self.registration.scope).href===url.href)||CDN.has(url.href);
+  if(!known)return;
+  event.respondWith((async()=>{
+    const cache=await caches.open(CACHE),cached=await cache.match(event.request);if(cached)return cached;
+    const response=await fetch(event.request);if(response.ok)await cache.put(event.request,response.clone());return response;
+  })());
+});
+self.addEventListener('push',event=>{
+  let data={title:'Meu Financeiro',body:''};try{data=event.data?.json()||data}catch(e){data.body=event.data?.text()||''}
+  event.waitUntil(self.registration.showNotification(data.title||'Meu Financeiro',{body:data.body||'',icon:'./icon-192.png',badge:'./icon-192.png'}));
+});
+self.addEventListener('notificationclick',event=>{
+  event.notification.close();event.waitUntil((async()=>{
+    const clients=await self.clients.matchAll({type:'window',includeUncontrolled:true});
+    const existing=clients.find(c=>c.url.startsWith(self.registration.scope));
+    if(existing)return existing.focus();return self.clients.openWindow(self.registration.scope);
+  })());
+});
