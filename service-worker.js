@@ -1,11 +1,11 @@
-const CACHE='gestao-gastos-v31';
-const ASSETS=['./','./index.html','./pierre-layout.css?v=31','./ui-modern-v2.js?v=31','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
+const CACHE='gestao-gastos-v32';
+const ASSETS=['./','./index.html','./pierre-layout.css?v=32','./ui-modern-v2.js?v=32','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)));self.skipWaiting()});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))));self.clients.claim()});
 function adicionarLayout(response){return response.text().then(html=>{
   html=html.replace(/<link[^>]*href=["'][^"']*pierre-layout\.css[^"']*["'][^>]*>\s*/gi,'');
   html=html.replace(/<script[^>]*src=["'][^"']*ui-modern-v2\.js[^"']*["'][^>]*><\/script>\s*/gi,'');
-  const patch='<link rel="stylesheet" href="./pierre-layout.css?v=31">\n<script src="./ui-modern-v2.js?v=31" defer></script>\n';
+  const patch='<link rel="stylesheet" href="./pierre-layout.css?v=32">\n<script src="./ui-modern-v2.js?v=32" defer></script>\n';
   html=html.replace('</head>',patch+'</head>');
   return new Response(html,{status:response.status,statusText:response.statusText,headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'}})
 })}
