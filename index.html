@@ -43,173 +43,14 @@ body{margin:0;font-family:var(--sans);background:var(--surround);display:flex;ju
 .screen.active{display:block}
 #tela-login.screen{display:none}
 #tela-login.screen.active{display:flex}
-
-#tela-login{flex-direction:column;justify-content:center;padding:34px;height:100%}
-#tela-login h1{font-family:var(--serif);font-weight:600;text-align:center;color:var(--ink);font-size:28px;margin-bottom:4px}
-#tela-login .sub{text-align:center;color:var(--ink-soft);margin-bottom:30px;font-size:13.5px}
-#tela-login .erro{color:var(--rust);font-size:13px;text-align:center;margin-top:10px;min-height:16px}
-#tela-login .alternar{text-align:center;margin-top:16px;color:var(--ink);text-decoration:underline;cursor:pointer;font-size:13.5px}
-#carregando{display:flex;flex-direction:column;gap:16px;padding:calc(20px + env(safe-area-inset-top)) 20px 20px;height:100%}
-.skel{background:linear-gradient(90deg,var(--line) 25%,var(--card) 50%,var(--line) 75%);background-size:200% 100%;animation:skel-pulse 1.4s ease-in-out infinite;border-radius:16px}
-.skel-balance{height:150px;border-radius:0 0 26px 26px;margin:-20px -20px 0}
-.skel-row{height:88px}
-.skel-card{height:170px}
-.skel-card.pequeno{height:90px}
-@keyframes skel-pulse{0%{background-position:200% 0}100%{background-position:-200% 0}}
-
-.top-header{background:var(--sage);color:var(--paper);padding:22px 20px 26px;border-radius:0 0 26px 26px;position:relative}
-.fab-add{position:absolute;right:20px;bottom:-18px;width:38px;height:38px;border-radius:50%;background:var(--card);color:var(--sage);border:none;font-size:20px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.4);line-height:1;padding:0}
-.carrossel-cartoes{display:flex;gap:10px;overflow-x:auto;padding:0 0 4px;margin:0 0 16px}
-.chip-cartao{flex:none;width:150px;border-radius:14px;padding:14px;color:#fff;position:relative}
-.chip-cartao .ch-top{display:flex;justify-content:space-between;font-size:9px;opacity:.85;text-transform:uppercase;letter-spacing:.04em}
-.chip-cartao .ch-val{font-family:var(--sans);font-variant-numeric:tabular-nums;font-size:16px;font-weight:700;margin-top:14px}
-.chip-cartao .ch-bar{height:4px;background:rgba(255,255,255,.25);border-radius:2px;margin-top:10px;overflow:hidden}
-.chip-cartao .ch-bar i{display:block;height:100%;background:#fff}
-.chip-cartao .ch-due{font-size:9.5px;opacity:.75;margin-top:6px}
-.categoria-flex{display:flex;align-items:center;gap:16px}
-.chart-wrap-mini{position:relative;width:100px;height:100px;flex-shrink:0}
-.legenda-categorias{flex:1;min-width:0}
-.top-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.brand{font-family:var(--serif);font-weight:600;font-size:19px}
-.icon-btn{width:34px;height:34px;border-radius:50%;background:rgba(16,23,17,.15);border:1px solid rgba(16,23,17,.25);color:var(--paper);display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;overflow:hidden}
-.icon-btn img{width:100%;height:100%;object-fit:cover}
-.balance-figure{text-align:center;margin-top:4px}
-.balance-figure .cap{font-size:12px;opacity:.65;margin-bottom:4px}
-.balance-figure .num{font-family:var(--serif);font-weight:600;font-size:36px;line-height:1}
-.mini-stats{display:flex;justify-content:center;gap:28px;margin-top:14px}
-.mini-stats div{text-align:center}
-.mini-stats span{display:block;font-size:10.5px;opacity:.65;margin-bottom:2px}
-.mini-stats b{font-size:14px;font-weight:600}
-
-.conta-row{position:relative;overflow:hidden;padding:0;border-bottom:1px solid var(--line)}
-.conta-row:last-child{border-bottom:0}
-.conta-info{min-width:0}
-.conta-nome{font-size:13.5px;font-weight:600}
-.conta-tipo{color:var(--ink-soft);font-size:11.5px;margin-top:2px}
-.conta-saldo{font-size:13.5px;font-weight:700;white-space:nowrap}
-
-.content{padding:20px 18px 6px}
-.section-title{font-family:var(--serif);font-size:17px;font-weight:600;margin:0 0 12px;display:flex;align-items:center;justify-content:space-between}
-.section-title .add-link{font-family:var(--sans);font-size:12.5px;font-weight:600;color:var(--sage);cursor:pointer;border:none;background:none}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}
-.vazio{color:var(--ink-soft);font-size:13px;text-align:center;padding:16px 6px}
-.chart-wrap{position:relative;height:180px;margin:2px auto 4px}
-
-.cat-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)}
-.cat-row:last-child{border-bottom:none}
-.cat-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
-.cat-name{flex:1;font-size:13px}
-.cat-value{font-size:13px;font-weight:600}
-
-.gasto-row{position:relative;overflow:hidden;padding:0;border-bottom:1px solid var(--line)}
-.gasto-row:last-child{border-bottom:0}
-.gasto-info{min-width:0}
-.gasto-desc{font-size:13.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.gasto-meta{color:var(--ink-soft);font-size:11.5px;margin-top:2px}
-.gasto-valor{color:var(--rust);font-size:13.5px;font-weight:700;white-space:nowrap}
-.btn-excluir{border:0;background:transparent;color:var(--ink-soft);padding:4px;font-size:15px;cursor:pointer}
-.swipe-inner{position:relative;background:var(--card);display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;transition:transform .18s ease}
-.swipe-bg{position:absolute;inset:0;background:var(--rust);color:#fff;display:flex;align-items:center;justify-content:flex-end;padding-right:18px;font-size:12px;font-weight:700;cursor:pointer}
-
-.item-row{margin-bottom:14px}
-.linha-entre{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
-.nome{font-weight:600;font-size:14.5px}
-.status{font-weight:600;font-size:12px}
-.status.quitada{color:var(--sage)}
-.status.pendente{color:var(--gold)}
-.detalhe{color:var(--ink-soft);font-size:12px;margin-bottom:8px}
-.trilha{height:7px;background:var(--line);border-radius:5px;overflow:hidden}
-.progresso{height:7px;background:var(--sage)}
-.progresso.gold{background:var(--gold)}
-.progresso.rust{background:var(--rust)}
-.alerta-strip{background:var(--gold-soft);color:var(--gold);font-size:11.5px;padding:9px 12px;border-radius:9px;font-weight:600;margin-bottom:12px}
-.assinatura-row{position:relative;overflow:hidden;padding:0;border-bottom:1px solid var(--line)}
-.assinatura-row:last-child{border-bottom:0}
-.assinatura-ico{width:30px;height:30px;border-radius:50%;flex-shrink:0;background:var(--sage);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px}
-.assinatura-info{flex:1;min-width:0}
-.assinatura-info b{font-size:13px;display:block}
-.assinatura-info small{color:var(--ink-soft);font-size:11px}
-.kpi-row{display:flex;gap:10px;margin-bottom:14px}
-.kpi{flex:1;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
-.kpi span{display:block;font-size:10.5px;color:var(--ink-soft)}
-.kpi b{font-size:16px;font-family:var(--serif)}
-.link-acao{color:var(--ink);text-decoration:underline;font-size:12px;margin-top:8px;display:inline-block;cursor:pointer;font-weight:600}
-
-.btn-flutuante{background:var(--sage);color:var(--paper);border:none;border-radius:30px;padding:14px;width:100%;font-weight:700;font-size:14.5px;margin-top:4px;cursor:pointer}
-.adicionar{color:var(--sage);font-weight:700;font-size:13px;cursor:pointer;background:none;border:none}
-
-.cartao-visual{position:relative;min-height:170px;border-radius:18px;padding:18px;overflow:hidden;color:#fff;margin-bottom:14px;box-shadow:0 10px 25px rgba(0,0,0,.4)}
-.cartao-visual.c1{background:linear-gradient(135deg,#3B2F63,#241C42)}
-.cartao-visual.c2{background:linear-gradient(135deg,#7A3B2E,#4A2119)}
-.cartao-visual.c3{background:linear-gradient(135deg,#1F4D3F,#0F2A22)}
-.cartao-visual.c4{background:linear-gradient(135deg,#1E3A5C,#12233A)}
-.chip-cartao.c1{background:linear-gradient(135deg,#3B2F63,#241C42)}
-.chip-cartao.c2{background:linear-gradient(135deg,#7A3B2E,#4A2119)}
-.chip-cartao.c3{background:linear-gradient(135deg,#1F4D3F,#0F2A22)}
-.chip-cartao.c4{background:linear-gradient(135deg,#1E3A5C,#12233A)}
-.cartao-topo{display:flex;justify-content:space-between;gap:10px}
-.cartao-nome{font-family:var(--serif);font-size:18px;font-weight:600}
-.cartao-banco{font-size:10.5px;opacity:.82;text-transform:uppercase;letter-spacing:.04em}
-.cartao-limite{margin-top:26px}
-.cartao-limite small{display:block;opacity:.78;font-size:11px}
-.cartao-limite strong{font-size:21px}
-.cartao-info{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
-.cartao-info div{background:rgba(255,255,255,.14);padding:7px;border-radius:9px}
-.cartao-info small{display:block;opacity:.78;font-size:10px}
-.cartao-info b{font-size:12.5px}
-.cartao-acoes{display:flex;gap:8px;margin-top:10px}
-.cartao-acoes button{flex:1;border:1px solid var(--line);border-radius:9px;padding:9px;background:var(--card);color:var(--ink);font-weight:600;font-size:12.5px;cursor:pointer}
-.compra-row{padding:9px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px}
-.compra-row:last-child{border-bottom:0}
-.compra-row small{display:block;color:var(--ink-soft);margin-top:2px}
-.compra-row strong{color:var(--rust);white-space:nowrap;font-size:13px}
-.parcelas-tag{background:var(--gold-soft);color:var(--gold);padding:2px 7px;border-radius:999px;font-size:10px;font-weight:700;display:inline-block;margin-top:3px}
-
-.tabbar{position:absolute;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-around;padding:8px 4px calc(8px + env(safe-area-inset-bottom))}
-.tab{text-align:center;color:var(--ink-soft);font-size:10.5px;cursor:pointer;flex:1}
-.tab.active{color:var(--ink);font-weight:700}
-.tab .icone{font-size:18px;display:block;margin-bottom:2px}
-
-.modal-fundo{position:fixed;top:0;bottom:0;left:50%;width:390px;max-width:100%;margin-left:-195px;background:rgba(0,0,0,.55);display:none;align-items:flex-end;z-index:30}
-.modal-fundo.topo{align-items:flex-start}
-.modal-fundo.topo .modal-cartao{border-radius:0 0 20px 20px;padding-top:calc(22px + env(safe-area-inset-top))}
-.modal-fundo.aberto{display:flex}
-.modal-cartao{background:var(--paper);width:100%;border-radius:20px 20px 0 0;padding:22px 20px calc(22px + env(safe-area-inset-bottom));max-height:88vh;overflow-y:auto}
-.modal-cartao h3{font-family:var(--serif);margin:0 0 16px;font-size:18px}
-.campo{margin-bottom:14px}
-.campo label{display:block;color:var(--ink-soft);font-size:12px;margin-bottom:5px;font-weight:600}
-.campo-busca{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:13.5px;font-family:var(--sans);margin-bottom:12px}
-.campo input,.campo select{width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:14.5px;font-family:var(--sans)}
-.modal-salvar{background:var(--sage);color:var(--paper);border:none;border-radius:10px;padding:13px;width:100%;font-weight:700;margin-top:4px;cursor:pointer;font-size:14.5px}
-.modal-cancelar{text-align:center;color:var(--ink-soft);margin-top:14px;cursor:pointer;font-size:13.5px}
-
-.perfil-foto-area{display:flex;justify-content:center;margin:4px 0 20px}
-.perfil-foto{width:80px;height:80px;border-radius:50%;background:var(--paper);border:2px dashed var(--gold);color:var(--gold);display:flex;align-items:center;justify-content:center;text-align:center;padding:8px;overflow:hidden;font-size:11px;font-weight:700;cursor:pointer}
-.perfil-foto img{width:100%;height:100%;object-fit:cover}
-.sair-perfil{display:block;width:100%;border:0;background:transparent;color:var(--rust);font-size:13.5px;padding:8px;margin-top:8px;cursor:pointer;font-weight:600}
-.nota-seguranca{background:var(--paper);color:var(--ink-soft);border-radius:8px;padding:10px;font-size:11.5px;line-height:1.4;margin-bottom:6px}
-.perfil-popup{position:absolute;top:64px;left:18px;right:18px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;z-index:35;box-shadow:0 15px 35px rgba(21,32,24,.25);display:none}
-.perfil-popup.aberto{display:block}
-.perfil-popup-topo{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--line)}
-.perfil-popup-avatar{width:44px;height:44px;border-radius:50%;background:var(--sage);color:var(--paper);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex-shrink:0;overflow:hidden}
-.perfil-popup-avatar img{width:100%;height:100%;object-fit:cover}
-.perfil-popup-info{min-width:0}
-.perfil-popup-info strong{display:block;font-size:14px;font-family:var(--serif);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.perfil-popup-info small{display:block;color:var(--ink-soft);font-size:11.5px;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.perfil-popup button{width:100%;border:0;border-radius:9px;padding:11px;background:var(--sage);color:var(--paper);font-weight:700;margin-top:6px;cursor:pointer;font-size:13.5px}
-.perfil-popup .sair{background:transparent;color:var(--rust)}
-.perfil-popup .fechar-perfil{background:transparent;color:var(--ink-soft)}
-
-.tela-bloqueio{position:fixed;top:0;bottom:0;left:50%;width:390px;max-width:100%;margin-left:-195px;background:var(--paper);z-index:50;display:flex;align-items:center;justify-content:center}
-.bloqueio-conteudo{text-align:center;padding:30px}
-.bloqueio-icone{font-size:38px;margin-bottom:10px}
-.tela-bloqueio h2{font-family:var(--serif);font-weight:600;margin:0 0 6px;color:var(--ink)}
-.tela-bloqueio p{color:var(--ink-soft);font-size:13px;margin:0 0 22px}
-@media(max-width:480px){.tela-bloqueio{left:0;width:100%;margin-left:0}}
-.ptr-indicator{position:absolute;top:8px;left:50%;transform:translateX(-50%) translateY(0);opacity:0;background:var(--card);color:var(--ink-soft);font-size:11px;font-weight:600;padding:6px 14px;border-radius:20px;box-shadow:0 4px 12px rgba(21,32,24,.2);z-index:40;pointer-events:none;transition:opacity .15s}
-.ptr-indicator.pronto{color:var(--sage)}
-
-@media(max-width:480px){body{padding:0;background:var(--paper)}.phone{width:100%;min-height:100vh;border-radius:0;box-shadow:none}.modal-fundo{left:0;width:100%;margin-left:0}}
+#tela-login{padding:40px 24px;flex-direction:column;justify-content:center}
+#tela-login h1{font-family:var(--serif);font-size:32px;line-height:1;margin:0 0 8px}
+#tela-login .sub{color:var(--ink-soft);margin-bottom:28px}
+.campo{margin-bottom:14px}.campo label{display:block;font-size:12px;color:var(--ink-soft);font-weight:600;margin-bottom:6px}.campo input,.campo select{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font:inherit}
+.modal-salvar{width:100%;padding:13px;border:0;border-radius:12px;background:var(--sage);color:var(--paper);font-weight:700;cursor:pointer}.modal-cancelar{text-align:center;color:var(--ink-soft);padding:13px;cursor:pointer}.erro{color:var(--rust);font-size:13px;text-align:center;margin-top:10px;min-height:16px}.alternar{text-align:center;margin-top:16px;color:var(--ink);text-decoration:underline;cursor:pointer;font-size:13.5px}
+#carregando{display:flex;flex-direction:column;gap:16px;padding:calc(20px + env(safe-area-inset-top)) 20px 20px;height:100%}.skel{background:linear-gradient(90deg,var(--line) 25%,var(--card) 50%,var(--line) 75%);background-size:200% 100%;animation:skel-pulse 1.4s ease-in-out infinite;border-radius:16px}.skel-balance{height:150px;border-radius:0 0 26px 26px;margin:-20px -20px 0}.skel-row{height:88px}.skel-card{height:170px}.skel-card.pequeno{height:90px}@keyframes skel-pulse{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.top-header{background:var(--sage);color:var(--paper);padding:22px 20px 26px;border-radius:0 0 26px 26px;position:relative}.fab-add{position:absolute;right:20px;bottom:-18px;width:38px;height:38px;border-radius:50%;background:var(--card);color:var(--sage);border:none;font-size:20px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,.4);line-height:1;padding:0}.carrossel-cartoes{display:flex;gap:10px;overflow-x:auto;padding:0 0 4px;margin:0 0 16px}.chip-cartao{flex:none;width:150px;border-radius:14px;padding:14px;color:#fff;position:relative}.chip-cartao .ch-top{display:flex;justify-content:space-between;font-size:9px;opacity:.85;text-transform:uppercase;letter-spacing:.04em}.chip-cartao .ch-val{font-family:var(--sans);font-variant-numeric:tabular-nums;font-size:16px;font-weight:700;margin-top:14px}.chip-cartao .ch-bar{height:4px;background:rgba(255,255,255,.25);border-radius:2px;margin-top:10px;overflow:hidden}.chip-cartao .ch-bar i{display:block;height:100%;background:#fff}.chip-cartao .ch-due{font-size:9.5px;opacity:.75;margin-top:6px}.categoria-flex{display:flex;align-items:center;gap:16px}.chart-wrap-mini{position:relative;width:100px;height:100px;flex-shrink:0}.legenda-categorias{flex:1;min-width:0}.top-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.brand{font-family:var(--serif);font-weight:600;font-size:19px}.icon-btn{width:34px;height:34px;border-radius:50%;background:rgba(16,23,17,.15);border:1px solid rgba(16,23,17,.25);color:var(--paper);display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;overflow:hidden}.icon-btn img{width:100%;height:100%;object-fit:cover}.balance-figure{text-align:center;margin-top:4px}.balance-figure .cap{font-size:12px;opacity:.65;margin-bottom:4px}.balance-figure .num{font-family:var(--serif);font-weight:600;font-size:36px;line-height:1}.mini-stats{display:flex;justify-content:center;gap:28px;margin-top:14px}.mini-stats div{text-align:center}.mini-stats span{display:block;font-size:10.5px;opacity:.65;margin-bottom:2px}.mini-stats b{font-size:14px;font-weight:600}.content{padding:20px 18px 6px}.section-title{font-family:var(--serif);font-size:17px;font-weight:600;margin:0 0 12px;display:flex;align-items:center;justify-content:space-between}.section-title .add-link,.adicionar{font-family:var(--sans);font-size:12.5px;font-weight:600;color:var(--sage);cursor:pointer;border:none;background:none}.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}.vazio{color:var(--ink-soft);font-size:13px;text-align:center;padding:16px 6px}.chart-wrap{position:relative;height:180px;margin:2px auto 4px}.tabbar{position:absolute;left:16px;right:16px;bottom:14px;display:flex;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:6px;box-shadow:0 10px 30px rgba(21,32,24,.18);z-index:20}.tab{flex:1;border:0;background:transparent;color:var(--ink-soft);border-radius:13px;padding:8px 4px;font-size:10px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}.tab.active{background:var(--sage-soft);color:var(--sage)}.tab .icone{font-size:18px}.modal-fundo{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-end;justify-content:center;z-index:100}.modal-fundo.aberto{display:flex}.modal-cartao{width:390px;max-width:100%;max-height:90vh;overflow-y:auto;background:var(--card);border-radius:24px 24px 0 0;padding:24px}.modal-cartao h3{font-family:var(--serif);font-size:24px;margin:0 0 20px}.kpi-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}.kpi span{display:block;color:var(--ink-soft);font-size:11px;margin-bottom:4px}.kpi b{font-size:18px}.perfil-foto-area{display:flex;justify-content:center;margin:4px 0 20px}.perfil-foto{width:80px;height:80px;border-radius:50%;background:var(--paper);border:2px dashed var(--gold);color:var(--gold);display:flex;align-items:center;justify-content:center;text-align:center;padding:8px;overflow:hidden;font-size:11px;font-weight:700;cursor:pointer}.perfil-foto img{width:100%;height:100%;object-fit:cover}.sair-perfil{display:block;width:100%;border:0;background:transparent;color:var(--rust);font-size:13.5px;padding:8px;margin-top:8px;cursor:pointer;font-weight:600}.nota-seguranca{background:var(--paper);color:var(--ink-soft);border-radius:8px;padding:10px;font-size:11.5px;line-height:1.4;margin-bottom:6px}.perfil-popup{position:absolute;top:64px;left:18px;right:18px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;z-index:35;box-shadow:0 15px 35px rgba(21,32,24,.25);display:none}.perfil-popup.aberto{display:block}.perfil-popup-topo{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--line)}.perfil-popup-avatar{width:44px;height:44px;border-radius:50%;background:var(--sage);color:var(--paper);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex-shrink:0;overflow:hidden}.perfil-popup-avatar img{width:100%;height:100%;object-fit:cover}.perfil-popup-info{min-width:0}.perfil-popup-info strong{display:block;font-size:14px;font-family:var(--serif);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.perfil-popup-info small{display:block;color:var(--ink-soft);font-size:11.5px;margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.perfil-popup button{width:100%;border:0;border-radius:9px;padding:11px;background:var(--sage);color:var(--paper);font-weight:700;margin-top:6px;cursor:pointer;font-size:13.5px}.perfil-popup .sair{background:transparent;color:var(--rust)}.perfil-popup .fechar-perfil{background:transparent;color:var(--ink-soft)}.tela-bloqueio{position:fixed;top:0;bottom:0;left:50%;width:390px;max-width:100%;margin-left:-195px;background:var(--paper);z-index:50;display:flex;align-items:center;justify-content:center}.bloqueio-conteudo{text-align:center;padding:30px}.bloqueio-icone{font-size:38px;margin-bottom:10px}.tela-bloqueio h2{font-family:var(--serif);font-weight:600;margin:0 0 6px;color:var(--ink)}.tela-bloqueio p{color:var(--ink-soft);font-size:13px;margin:0 0 22px}.ptr-indicator{position:absolute;top:8px;left:50%;transform:translateX(-50%) translateY(0);opacity:0;background:var(--card);color:var(--ink-soft);font-size:11px;font-weight:600;padding:6px 14px;border-radius:20px;box-shadow:0 4px 12px rgba(21,32,24,.2);z-index:40;pointer-events:none;transition:opacity .15s}.ptr-indicator.pronto{color:var(--sage)}
+@media(max-width:480px){body{padding:0;background:var(--paper)}.phone{width:100%;min-height:100vh;border-radius:0;box-shadow:none}.modal-fundo{left:0;width:100%;margin-left:0}.tela-bloqueio{left:0;width:100%;margin-left:0}}
 </style>
 <link rel="stylesheet" href="./pierre-layout.css?v=40">
 <link rel="stylesheet" href="./app-accessibility.css?v=58">
@@ -217,259 +58,31 @@ body{margin:0;font-family:var(--sans);background:var(--surround);display:flex;ju
 <script defer src="./app-core.js?v=58"></script>
 <script defer src="./app-v50.js?v=58"></script>
 <script defer src="./app-subscription-logos-v56.js?v=58"></script>
+<script defer src="./app-settings-icon-v59.js?v=60"></script>
 </head>
 <body>
 <div class="phone">
 <div id="estado-dados" role="status" aria-live="polite" hidden></div>
 <div id="ptr-indicator" class="ptr-indicator">Puxe para atualizar</div>
-<div id="carregando">
-  <div class="skel skel-balance"></div>
-  <div class="skel skel-row"></div>
-  <div class="skel skel-card"></div>
-  <div class="skel skel-card pequeno"></div>
+<div id="carregando"><div class="skel skel-balance"></div><div class="skel skel-row"></div><div class="skel skel-card"></div><div class="skel skel-card pequeno"></div></div>
+<div class="screen" id="tela-login"><h1>Gestão de Gastos</h1><div class="sub">Seus gastos, em ordem.</div><div class="campo"><label>E-mail</label><input type="email" id="login-email" autocomplete="email" placeholder="voce@email.com"></div><div class="campo"><label>Senha</label><input type="password" id="login-senha" autocomplete="current-password" placeholder="mínimo 6 caracteres"></div><button class="modal-salvar" id="btn-login" onclick="entrar()">Entrar</button><div class="erro" id="login-erro" role="alert"></div><div class="alternar" onclick="alternarModoLogin()" id="link-alternar">Ainda não tem conta? Criar conta</div></div>
+<div class="screen" id="tela-resumo"><div class="top-header"><div class="top-row"><span class="brand">Gestão de Gastos</span><button class="icon-btn" id="perfil-mini" onclick="abrirPopupPerfil()">MP</button></div><div class="balance-figure"><div class="cap">Patrimônio líquido</div><div class="num tabular" id="patrimonio-liquido">R$ 0,00</div></div><div class="mini-stats"><div><span>Em contas</span><b class="tabular" id="total-contas">R$ 0,00</b></div><div><span>Gasto no mês</span><b class="tabular" id="total-mes">R$ 0,00</b></div></div><button class="fab-add" onclick="abrirModal('modal-gasto')" title="Adicionar transação">+</button></div><div class="content"><div class="carrossel-cartoes" id="carrossel-cartoes"></div><div class="section-title">Por categoria</div><div class="card"><div class="categoria-flex"><div class="chart-wrap-mini"><canvas id="catChart"></canvas></div><div id="conteudo-categorias" class="legenda-categorias"></div></div></div><div class="section-title">Orçamentos do mês</div><div class="card" id="lista-orcamentos"></div><div class="section-title">Evolução (6 meses)</div><div class="card"><div class="chart-wrap" style="height:150px"><canvas id="trendChart"></canvas></div></div><div class="section-title">Últimos lançamentos<span class="add-link" onclick="abrirModal('modal-gasto')">+ novo</span></div><div class="card" id="lista-gastos-recentes"></div><div class="section-title">Metas de economia</div><div class="card" id="lista-metas-resumo"></div></div></div>
+<div class="screen" id="tela-contas"><div class="content"><div class="section-title">Minhas contas<button class="adicionar" onclick="abrirModal('modal-conta')">+ Nova</button></div><div class="card" id="lista-contas"></div></div></div>
+<div class="screen" id="tela-dividas"><div class="content"><div class="section-title">Dívidas e parcelas<button class="adicionar" onclick="abrirModal('modal-divida')">+ Nova</button></div><div id="lista-dividas"></div></div></div>
+<div class="screen" id="tela-metas"><div class="content"><div class="section-title">Metas de economia<button class="adicionar" onclick="abrirModal('modal-meta')">+ Nova</button></div><div id="lista-metas"></div></div></div>
+<div class="screen" id="tela-cartoes"><div class="content"><div class="section-title">Meus cartões<button class="adicionar" onclick="abrirModal('modal-cartao')">+ Novo</button></div><div id="lista-cartoes"></div></div></div>
+<div class="screen" id="tela-assinaturas"><div class="content"><div class="section-title">Assinaturas e recorrências<button class="adicionar" onclick="abrirModal('modal-assinatura')">+ Nova</button></div><div class="kpi-row"><div class="kpi"><span>Custo mensal</span><b class="tabular" id="assinaturas-mensal">R$ 0,00</b></div><div class="kpi"><span>Custo anual</span><b class="tabular" id="assinaturas-anual">R$ 0,00</b></div></div><div id="alertas-assinaturas"></div><div class="card" id="lista-assinaturas"></div></div></div>
+<div role="navigation" aria-label="Navegação principal" class="tabbar" id="tabbar" style="display:none"><button type="button" class="tab active" data-tela="tela-resumo" onclick="irPara('tela-resumo',this)"><span class="icone">📒</span>Resumo</button><button type="button" class="tab" data-tela="tela-contas" onclick="irPara('tela-contas',this)"><span class="icone">🏦</span>Contas</button><button type="button" class="tab" data-tela="tela-dividas" onclick="irPara('tela-dividas',this)"><span class="icone">📄</span>Dívidas</button><button type="button" class="tab" data-tela="tela-metas" onclick="irPara('tela-metas',this)"><span class="icone">🎯</span>Metas</button><button type="button" class="tab" data-tela="tela-cartoes" onclick="irPara('tela-cartoes',this)"><span class="icone">💳</span>Cartões</button><button type="button" class="tab" data-tela="tela-assinaturas" onclick="irPara('tela-assinaturas',this)"><span class="icone">🔔</span>Assinaturas</button></div>
+<div class="perfil-popup" id="perfil-popup"><div class="perfil-popup-topo"><div class="perfil-popup-avatar" id="perfil-popup-avatar">MP</div><div class="perfil-popup-info"><strong id="perfil-popup-nome">Minha conta</strong><small id="perfil-popup-email"></small></div></div><button onclick="fecharPopupPerfil();abrirPerfil()">Editar perfil</button><button class="fechar-perfil" onclick="fecharPopupPerfil();exportarCSV()">Exportar extrato (CSV)</button><button class="sair" onclick="fecharPopupPerfil();confirmarSair()">Sair da conta</button><button class="fechar-perfil" onclick="fecharPopupPerfil()">Fechar</button></div>
+<div class="modal-fundo" id="modal-gasto"><div class="modal-cartao"><h3>Novo gasto</h3><div class="campo"><label>Tipo</label><select id="gasto-tipo"><option value="saida">Saída (gasto)</option><option value="entrada">Entrada (receita)</option></select></div><div class="campo"><label>Descrição</label><input type="text" id="gasto-descricao" placeholder="Ex: Supermercado"></div><div class="campo"><label>Valor (R$)</label><input type="text" id="gasto-valor" placeholder="0,00" inputmode="decimal" oninput="mascaraMoeda(this)"></div><div class="campo"><label>Categoria</label><select id="gasto-categoria" onchange="selecionarCategoria(this)"><option>Moradia</option><option>Alimentação</option><option>Transporte</option><option>Contas fixas</option><option>Cartão de crédito</option><option>Lazer</option><option>Saúde</option><option>Outros</option><option value="__nova__">+ Nova categoria…</option></select></div><button class="modal-salvar" onclick="salvarGasto()">Salvar gasto</button><div class="modal-cancelar" onclick="fecharModal('modal-gasto')">Cancelar</div></div></div>
+<div class="modal-fundo" id="modal-conta"><div class="modal-cartao"><h3>Nova conta</h3><div class="campo"><label>Instituição</label><input type="text" id="conta-instituicao" placeholder="Ex: Nubank, Itaú, Caixa"></div><div class="campo"><label>Tipo</label><select id="conta-tipo"><option value="corrente">Conta corrente</option><option value="poupanca">Poupança</option><option value="investimento">Investimento</option><option value="carteira_digital">Carteira digital</option></select></div><div class="campo"><label>Saldo atual (R$)</label><input type="text" id="conta-saldo" placeholder="0,00" inputmode="decimal" oninput="mascaraMoeda(this)"></div><button class="modal-salvar" onclick="salvarConta()">Salvar conta</button><div class="modal-cancelar" onclick="fecharModal('modal-conta')">Cancelar</div></div></div>
+<div class="modal-fundo" id="modal-divida"><div class="modal-cartao"><h3>Nova dívida</h3><div class="campo"><label>Descrição</label><input type="text" id="divida-descricao"></div><div class="campo"><label>Valor total (R$)</label><input type="text" id="divida-valor" inputmode="decimal" oninput="mascaraMoeda(this)"></div><div class="campo"><label>Número de parcelas</label><input type="number" id="divida-parcelas" min="1" value="1"></div><div class="campo"><label>Parcelas pagas</label><input type="number" id="divida-pagas" min="0" value="0"></div><button class="modal-salvar" onclick="salvarDivida()">Salvar dívida</button><div class="modal-cancelar" onclick="fecharModal('modal-divida')">Cancelar</div></div></div>
+<div class="modal-fundo" id="modal-meta"><div class="modal-cartao"><h3>Nova meta</h3><div class="campo"><label>Nome</label><input type="text" id="meta-nome"></div><div class="campo"><label>Valor alvo (R$)</label><input type="text" id="meta-alvo" inputmode="decimal" oninput="mascaraMoeda(this)"></div><div class="campo"><label>Valor já guardado (R$)</label><input type="text" id="meta-atual" inputmode="decimal" oninput="mascaraMoeda(this)"></div><button class="modal-salvar" onclick="salvarMeta()">Salvar meta</button><div class="modal-cancelar" onclick="fecharModal('modal-meta')">Cancelar</div></div></div>
+<div class="modal-fundo" id="modal-cartao"><div class="modal-cartao"><h3>Novo cartão</h3><div class="campo"><label>Nome do cartão</label><input type="text" id="cartao-nome" placeholder="Ex: Nubank Platinum"></div><div class="campo"><label>Limite (R$)</label><input type="text" id="cartao-limite" inputmode="decimal" oninput="mascaraMoeda(this)"></div><div class="campo"><label>Dia de fechamento</label><input type="number" id="cartao-fechamento" min="1" max="31"></div><div class="campo"><label>Dia de vencimento</label><input type="number" id="cartao-vencimento" min="1" max="31"></div><button class="modal-salvar" onclick="salvarCartao()">Salvar cartão</button><div class="modal-cancelar" onclick="fecharModal('modal-cartao')">Cancelar</div></div></div>
+<div class="modal-fundo" id="modal-assinatura"><div class="modal-cartao"><h3>Nova assinatura</h3><div class="campo"><label>Nome</label><input type="text" id="assinatura-nome" placeholder="Ex: Netflix"></div><div class="campo"><label>Valor (R$)</label><input type="text" id="assinatura-valor" inputmode="decimal" oninput="mascaraMoeda(this)"></div><div class="campo"><label>Ciclo</label><select id="assinatura-ciclo"><option value="mensal">Mensal</option><option value="anual">Anual</option></select></div><div class="campo"><label>Dia da cobrança</label><input type="text" id="assinatura-dia" placeholder="Ex: 10" inputmode="numeric"></div><div class="campo" id="campo-mes-cobranca" style="display:none"><label>Mês da cobrança (se anual)</label><input type="text" id="assinatura-mes" placeholder="Ex: 3 (março)" inputmode="numeric"></div><button class="modal-salvar" onclick="salvarAssinatura()">Salvar assinatura</button><div class="modal-cancelar" onclick="fecharModal('modal-assinatura')">Cancelar</div></div></div>
+<div class="modal-fundo topo" id="modal-perfil"><div class="modal-cartao"><h3>Meu perfil</h3><div class="perfil-foto-area"><label class="perfil-foto" for="perfil-foto-input" id="perfil-foto-preview">Adicionar foto</label><input id="perfil-foto-input" type="file" accept="image/*" style="display:none" onchange="alterarFotoPerfil(event)"></div><div style="text-align:center;margin:-14px 0 20px;color:var(--ink-soft);font-size:12px" id="perfil-modal-email"></div><div class="campo"><label>Nome completo</label><input type="text" id="perfil-nome" placeholder="Como quer ser chamado"></div><div class="campo"><label>Telefone</label><input type="tel" id="perfil-telefone" placeholder="(00) 00000-0000"></div><div class="campo"><label>Renda mensal (R$)</label><input type="text" id="perfil-renda" placeholder="0,00" inputmode="decimal" oninput="mascaraMoeda(this)"></div><div class="campo"><label>Principal objetivo financeiro</label><input type="text" id="perfil-objetivo" placeholder="Ex: montar reserva de emergência"></div><div class="nota-seguranca" id="nota-biometria">Após salvar seu perfil, você poderá ativar o desbloqueio com Face ID/biometria deste aparelho.</div><button class="modal-salvar" onclick="salvarPerfil()">Salvar perfil</button><button class="modal-salvar" id="btn-biometria" style="display:none;background:var(--gold);margin-top:10px" onclick="ativarBiometria()">Ativar Face ID / biometria</button><button class="modal-salvar" id="btn-notificacoes" style="display:none;background:var(--sage);margin-top:10px" onclick="ativarNotificacoes()">Ativar notificação de vencimento</button><button class="sair-perfil" onclick="sair()">Sair da conta</button><div class="modal-cancelar" onclick="fecharModal('modal-perfil')">Cancelar</div></div></div>
+<div id="tela-bloqueio" class="tela-bloqueio" style="display:none"><div class="bloqueio-conteudo"><div class="bloqueio-icone">🔒</div><h2>Gestão de Gastos</h2><p>Desbloqueie com Face ID/biometria para continuar.</p><button class="modal-salvar" onclick="tentarDesbloquear()">Desbloquear</button></div></div>
 </div>
-
-<div class="screen" id="tela-login">
-  <h1>Gestão de Gastos</h1>
-  <div class="sub">Seus gastos, em ordem.</div>
-  <div class="campo"><label>E-mail</label><input type="email" id="login-email" autocomplete="email" placeholder="voce@email.com"></div>
-  <div class="campo"><label>Senha</label><input type="password" id="login-senha" autocomplete="current-password" placeholder="mínimo 6 caracteres"></div>
-  <button class="modal-salvar" id="btn-login" onclick="entrar()">Entrar</button>
-  <div class="erro" id="login-erro" role="alert"></div>
-  <div class="alternar" onclick="alternarModoLogin()" id="link-alternar">Ainda não tem conta? Criar conta</div>
-</div>
-
-<div class="screen" id="tela-resumo">
-  <div class="top-header">
-    <div class="top-row">
-      <span class="brand">Gestão de Gastos</span>
-      <button class="icon-btn" id="perfil-mini" onclick="abrirPopupPerfil()">MP</button>
-    </div>
-    <div class="balance-figure">
-      <div class="cap">Patrimônio líquido</div>
-      <div class="num tabular" id="patrimonio-liquido">R$ 0,00</div>
-    </div>
-    <div class="mini-stats">
-      <div><span>Em contas</span><b class="tabular" id="total-contas">R$ 0,00</b></div>
-      <div><span>Gasto no mês</span><b class="tabular" id="total-mes">R$ 0,00</b></div>
-    </div>
-    <button class="fab-add" onclick="abrirModal('modal-gasto')" title="Adicionar transação">+</button>
-  </div>
-  <div class="content">
-    <div class="carrossel-cartoes" id="carrossel-cartoes"></div>
-
-    <div class="section-title">Por categoria</div>
-    <div class="card">
-      <div class="categoria-flex">
-        <div class="chart-wrap-mini"><canvas id="catChart"></canvas></div>
-        <div id="conteudo-categorias" class="legenda-categorias"></div>
-      </div>
-    </div>
-
-    <div class="section-title">Orçamentos do mês</div>
-    <div class="card" id="lista-orcamentos"></div>
-
-    <div class="section-title">Evolução (6 meses)</div>
-    <div class="card"><div class="chart-wrap" style="height:150px"><canvas id="trendChart"></canvas></div></div>
-
-    <div class="section-title">Últimos lançamentos<span class="add-link" onclick="abrirModal('modal-gasto')">+ novo</span></div>
-
-    <div class="card" id="lista-gastos-recentes"></div>
-
-    <div class="section-title">Metas de economia</div>
-    <div class="card" id="lista-metas-resumo"></div>
-  </div>
-</div>
-
-<div class="screen" id="tela-contas">
-  <div class="content">
-    <div class="section-title">Minhas contas<button class="adicionar" onclick="abrirModal('modal-conta')">+ Nova</button></div>
-    <div class="card" id="lista-contas"></div>
-  </div>
-</div>
-
-<div class="screen" id="tela-dividas">
-  <div class="content">
-    <div class="section-title">Dívidas e parcelas<button class="adicionar" onclick="abrirModal('modal-divida')">+ Nova</button></div>
-    <div id="lista-dividas"></div>
-  </div>
-</div>
-
-<div class="screen" id="tela-metas">
-  <div class="content">
-    <div class="section-title">Metas de economia<button class="adicionar" onclick="abrirModal('modal-meta')">+ Nova</button></div>
-    <div id="lista-metas"></div>
-  </div>
-</div>
-
-<div class="screen" id="tela-cartoes">
-  <div class="content">
-    <div class="section-title">Meus cartões<button class="adicionar" onclick="abrirModal('modal-cartao')">+ Novo</button></div>
-    <div id="lista-cartoes"></div>
-  </div>
-</div>
-
-<div class="screen" id="tela-assinaturas">
-  <div class="content">
-    <div class="section-title">Assinaturas e recorrências<button class="adicionar" onclick="abrirModal('modal-assinatura')">+ Nova</button></div>
-    <div class="kpi-row">
-      <div class="kpi"><span>Custo mensal</span><b class="tabular" id="assinaturas-mensal">R$ 0,00</b></div>
-      <div class="kpi"><span>Custo anual</span><b class="tabular" id="assinaturas-anual">R$ 0,00</b></div>
-    </div>
-    <div id="alertas-assinaturas"></div>
-    <div class="card" id="lista-assinaturas"></div>
-  </div>
-</div>
-
-<div role="navigation" aria-label="Navegação principal" class="tabbar" id="tabbar" style="display:none">
-  <button type="button" class="tab active" data-tela="tela-resumo" onclick="irPara('tela-resumo',this)"><span class="icone">📒</span>Resumo</button>
-  <button type="button" class="tab" data-tela="tela-contas" onclick="irPara('tela-contas',this)"><span class="icone">🏦</span>Contas</button>
-  <button type="button" class="tab" data-tela="tela-dividas" onclick="irPara('tela-dividas',this)"><span class="icone">📄</span>Dívidas</button>
-  <button type="button" class="tab" data-tela="tela-metas" onclick="irPara('tela-metas',this)"><span class="icone">🎯</span>Metas</button>
-  <button type="button" class="tab" data-tela="tela-cartoes" onclick="irPara('tela-cartoes',this)"><span class="icone">💳</span>Cartões</button>
-  <button type="button" class="tab" data-tela="tela-assinaturas" onclick="irPara('tela-assinaturas',this)"><span class="icone">🔔</span>Assinaturas</button>
-</div>
-
-<div class="perfil-popup" id="perfil-popup">
-  <div class="perfil-popup-topo">
-    <div class="perfil-popup-avatar" id="perfil-popup-avatar">MP</div>
-    <div class="perfil-popup-info">
-      <strong id="perfil-popup-nome">Minha conta</strong>
-      <small id="perfil-popup-email"></small>
-    </div>
-  </div>
-  <button onclick="fecharPopupPerfil();abrirPerfil()">Editar perfil</button>
-  <button class="fechar-perfil" onclick="fecharPopupPerfil();exportarCSV()">Exportar extrato (CSV)</button>
-  <button class="sair" onclick="fecharPopupPerfil();confirmarSair()">Sair da conta</button>
-  <button class="fechar-perfil" onclick="fecharPopupPerfil()">Fechar</button>
-</div>
-
-<div class="modal-fundo" id="modal-gasto">
-  <div class="modal-cartao">
-    <h3>Novo gasto</h3>
-    <div class="campo"><label>Tipo</label>
-      <select id="gasto-tipo">
-        <option value="saida">Saída (gasto)</option>
-        <option value="entrada">Entrada (receita)</option>
-      </select>
-    </div>
-    <div class="campo"><label>Descrição</label><input type="text" id="gasto-descricao" placeholder="Ex: Supermercado"></div>
-    <div class="campo"><label>Valor (R$)</label><input type="text" id="gasto-valor" placeholder="0,00" inputmode="decimal" oninput="mascaraMoeda(this)"></div>
-    <div class="campo"><label>Categoria</label>
-      <select id="gasto-categoria" onchange="selecionarCategoria(this)">
-        <option>Moradia</option><option>Alimentação</option><option>Transporte</option>
-        <option>Contas fixas</option><option>Cartão de crédito</option><option>Lazer</option>
-        <option>Saúde</option><option>Outros</option>
-        <option value="__nova__">+ Nova categoria…</option>
-      </select>
-    </div>
-    <button class="modal-salvar" onclick="salvarGasto()">Salvar gasto</button>
-    <div class="modal-cancelar" onclick="fecharModal('modal-gasto')">Cancelar</div>
-  </div>
-</div>
-
-<div class="modal-fundo" id="modal-conta">
-  <div class="modal-cartao">
-    <h3>Nova conta</h3>
-    <div class="campo"><label>Instituição</label><input type="text" id="conta-instituicao" placeholder="Ex: Nubank, Itaú, Caixa"></div>
-    <div class="campo"><label>Tipo</label>
-      <select id="conta-tipo">
-        <option value="corrente">Conta corrente</option>
-        <option value="poupanca">Poupança</option>
-        <option value="investimento">Investimento</option>
-        <option value="carteira_digital">Carteira digital</option>
-      </select>
-    </div>
-    <div class="campo"><label>Saldo atual (R$)</label><input type="text" id="conta-saldo" placeholder="0,00" inputmode="decimal" oninput="mascaraMoeda(this)"></div>
-    <button class="modal-salvar" onclick="salvarConta()">Salvar conta</button>
-    <div class="modal-cancelar" onclick="fecharModal('modal-conta')">Cancelar</div>
-  </div>
-</div>
-
-<div class="modal-fundo" id="modal-divida">
-  <div class="modal-cartao">
-    <h3>Nova dívida</h3>
-    <div class="campo"><label>Nome</label><input type="text" id="divida-nome" placeholder="Ex: Fatura Nubank"></div>
-    <div class="campo"><label>Valor total (R$)</label><input type="text" id="divida-valor" placeholder="0,00" inputmode="decimal" oninput="mascaraMoeda(this)"></div>
-    <div class="campo"><label>Número de parcelas</label><input type="text" id="divida-parcelas" placeholder="Ex: 3" inputmode="numeric"></div>
-    <button class="modal-salvar" onclick="salvarDivida()">Salvar</button>
-    <div class="modal-cancelar" onclick="fecharModal('modal-divida')">Cancelar</div>
-  </div>
-</div>
-
-<div class="modal-fundo" id="modal-meta">
-  <div class="modal-cartao">
-    <h3>Nova meta</h3>
-    <div class="campo"><label>Nome</label><input type="text" id="meta-nome" placeholder="Ex: Reserva de emergência"></div>
-    <div class="campo"><label>Valor alvo (R$)</label><input type="text" id="meta-valor" placeholder="0,00" inputmode="decimal" oninput="mascaraMoeda(this)"></div>
-    <button class="modal-salvar" onclick="salvarMeta()">Salvar</button>
-    <div class="modal-cancelar" onclick="fecharModal('modal-meta')">Cancelar</div>
-  </div>
-</div>
-
-<div class="modal-fundo" id="modal-cartao">
-  <div class="modal-cartao">
-    <h3>Novo cartão</h3>
-    <div class="campo"><label>Nome do cartão</label><input type="text" id="cartao-nome" placeholder="Ex: Nubank"></div>
-    <div class="campo"><label>Banco</label><input type="text" id="cartao-banco" placeholder="Ex: Nubank"></div>
-    <div class="campo"><label>Limite total (R$)</label><input type="text" id="cartao-limite" placeholder="0,00" inputmode="decimal" oninput="mascaraMoeda(this)"></div>
-    <div class="campo"><label>Dia de fechamento da fatura</label><input type="text" id="cartao-fechamento" placeholder="Ex: 22" inputmode="numeric"></div>
-    <div class="campo"><label>Dia de vencimento da fatura</label><input type="text" id="cartao-vencimento" placeholder="Ex: 29" inputmode="numeric"></div>
-    <button class="modal-salvar" onclick="salvarCartao()">Salvar cartão</button>
-    <div class="modal-cancelar" onclick="fecharModal('modal-cartao')">Cancelar</div>
-  </div>
-</div>
-
-<div class="modal-fundo" id="modal-assinatura">
-  <div class="modal-cartao">
-    <h3>Nova assinatura</h3>
-    <div class="campo"><label>Nome</label><input type="text" id="assinatura-nome" placeholder="Ex: Netflix, Aluguel, Academia"></div>
-    <div class="campo"><label>Valor (R$)</label><input type="text" id="assinatura-valor" placeholder="0,00" inputmode="decimal" oninput="mascaraMoeda(this)"></div>
-    <div class="campo"><label>Ciclo de cobrança</label>
-      <select id="assinatura-ciclo" onchange="document.getElementById('campo-mes-cobranca').style.display=this.value==='anual'?'block':'none'">
-        <option value="mensal">Mensal</option>
-        <option value="anual">Anual</option>
-      </select>
-    </div>
-    <div class="campo"><label>Dia da cobrança</label><input type="text" id="assinatura-dia" placeholder="Ex: 10" inputmode="numeric"></div>
-    <div class="campo" id="campo-mes-cobranca" style="display:none"><label>Mês da cobrança (se anual)</label><input type="text" id="assinatura-mes" placeholder="Ex: 3 (março)" inputmode="numeric"></div>
-    <button class="modal-salvar" onclick="salvarAssinatura()">Salvar assinatura</button>
-    <div class="modal-cancelar" onclick="fecharModal('modal-assinatura')">Cancelar</div>
-  </div>
-</div>
-
-<div class="modal-fundo topo" id="modal-perfil">
-  <div class="modal-cartao">
-    <h3>Meu perfil</h3>
-    <div class="perfil-foto-area">
-      <label class="perfil-foto" for="perfil-foto-input" id="perfil-foto-preview">Adicionar foto</label>
-      <input id="perfil-foto-input" type="file" accept="image/*" style="display:none" onchange="alterarFotoPerfil(event)">
-    </div>
-    <div style="text-align:center;margin:-14px 0 20px;color:var(--ink-soft);font-size:12px" id="perfil-modal-email"></div>
-    <div class="campo"><label>Nome completo</label><input type="text" id="perfil-nome" placeholder="Como quer ser chamado"></div>
-    <div class="campo"><label>Telefone</label><input type="tel" id="perfil-telefone" placeholder="(00) 00000-0000"></div>
-    <div class="campo"><label>Renda mensal (R$)</label><input type="text" id="perfil-renda" placeholder="0,00" inputmode="decimal" oninput="mascaraMoeda(this)"></div>
-    <div class="campo"><label>Principal objetivo financeiro</label><input type="text" id="perfil-objetivo" placeholder="Ex: montar reserva de emergência"></div>
-    <div class="nota-seguranca" id="nota-biometria">Após salvar seu perfil, você poderá ativar o desbloqueio com Face ID/biometria deste aparelho.</div>
-    <button class="modal-salvar" onclick="salvarPerfil()">Salvar perfil</button>
-    <button class="modal-salvar" id="btn-biometria" style="display:none;background:var(--gold);margin-top:10px" onclick="ativarBiometria()">Ativar Face ID / biometria</button>
-    <button class="modal-salvar" id="btn-notificacoes" style="display:none;background:var(--sage);margin-top:10px" onclick="ativarNotificacoes()">Ativar notificação de vencimento</button>
-    <button class="sair-perfil" onclick="sair()">Sair da conta</button>
-    <div class="modal-cancelar" onclick="fecharModal('modal-perfil')">Cancelar</div>
-  </div>
-</div>
-
-<div id="tela-bloqueio" class="tela-bloqueio" style="display:none">
-  <div class="bloqueio-conteudo">
-    <div class="bloqueio-icone">🔒</div>
-    <h2>Gestão de Gastos</h2>
-    <p>Desbloqueie com Face ID/biometria para continuar.</p>
-    <button class="modal-salvar" onclick="tentarDesbloquear()">Desbloquear</button>
-  </div>
-</div>
-
-</div>
-
 <script>if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(console.error));</script>
 </body>
 </html>
