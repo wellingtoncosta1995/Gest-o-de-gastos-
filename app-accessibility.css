@@ -1,0 +1,46 @@
+/* Mobile usability, keeping the existing visual identity. */
+button{font:inherit;cursor:pointer;touch-action:manipulation}
+button:disabled{opacity:.55;cursor:wait}
+button:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--sage);outline-offset:3px}
+.tabbar .tab{border:0;background:transparent;color:var(--ink-soft);min-height:48px;min-width:0;padding:4px 2px}
+.tabbar .tab.active{color:var(--sage);background:var(--sage-soft);border-radius:12px}
+#estado-dados{position:relative;padding:10px 16px;background:var(--sage-soft);color:var(--ink);font-size:14px;z-index:50}
+#estado-dados[hidden]{display:none}
+#estado-dados button{border:0;background:none;color:inherit;text-decoration:underline;min-height:44px}
+.mf-delete{border:0;background:transparent;color:var(--rust);min-height:44px;padding:6px;font-size:12px;flex-shrink:0}
+.mf-more{width:100%;min-height:44px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);margin:12px 0}
+#tela-resumo .mf-head{gap:8px!important}
+#tela-resumo .mf-head-actions{gap:0!important;margin:0!important}
+#tela-resumo .mf-head-actions button{min-width:44px!important;min-height:44px!important}
+#tela-resumo .mf-brand b{font-size:12px!important}
+#tela-resumo .mf-brand span{display:none}
+#tela-resumo .mf-brand img{width:32px;height:32px}
+#tela-resumo .mf-filters input,#tela-resumo .mf-filters select,.modal-fundo input,.modal-fundo select,#tela-login input,#mf-settings-content select{font-size:16px!important;min-height:44px!important}
+#tela-resumo .mf-filters{grid-template-columns:1fr 1fr}
+#mf-filter-text{grid-column:1/-1}
+#tela-resumo .mf-quick b{font-size:12px}
+#tela-resumo .mf-insight-grid{grid-template-columns:1fr}
+#tela-resumo .mf-insight-grid article{padding:12px;display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center}
+#tela-resumo .mf-insight-grid span{font-size:14px}
+#tela-resumo .mf-insight-grid small{font-size:12px;grid-column:1/-1}
+#tela-resumo .mf-insight-grid b{margin:0;overflow-wrap:anywhere}
+#tela-resumo .mf-calendar-list span{min-width:0}
+#tela-resumo .mf-calendar-list b,.gasto-desc{overflow-wrap:anywhere}
+#tela-resumo .mf-calendar-list span small,#tela-resumo .mf-report-grid span,#tela-resumo .mf-report-grid small,#tela-resumo .mf-section-head small{font-size:12px}
+#lista-assinaturas .mf-sub{padding:12px;gap:8px}
+#lista-assinaturas .mf-sub-main{flex-direction:column;align-items:stretch}
+#lista-assinaturas .mf-sub-main select{max-width:100%!important;font-size:16px!important;min-height:44px!important}
+#lista-assinaturas .mf-sub-main small,#lista-assinaturas .mf-sub-main span{font-size:12px}
+#lista-assinaturas .mf-sub-main b{overflow-wrap:anywhere}
+#lista-assinaturas .mf-sub-logo{display:none!important}
+#lista-assinaturas .mf56-sub-logo{width:44px!important;height:44px!important;min-width:44px!important;margin-right:0!important}
+#lista-gastos-recentes .swipe-inner{gap:6px}
+#lista-gastos-recentes .gasto-info{min-width:0;flex:1}
+#lista-gastos-recentes .gasto-valor{white-space:nowrap;font-size:13px}
+#mf-settings-modal .modal-cartao{width:100%}
+@media(max-width:360px){#tela-resumo .mf-brand img{display:none}.mf-calendar-list>div{grid-template-columns:42px minmax(0,1fr) auto!important}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+html.mf-light{--paper:#F3F6F1;--card:#FFFFFF;--ink:#152018;--ink-soft:#4C594E;--line:#D6DED2;--sage:#2E6F5C;--sage-soft:#DCEAE3;--rust:#A3392E;--rust-soft:#F3DCD8;--gold:#9C6A1F;--gold-soft:#F3E5CC;--surround:#D9D2C0;color-scheme:light}
+html.mf-dark{color-scheme:dark}
+.link-acao[role="button"]{display:inline-flex;align-items:center;min-height:44px}
