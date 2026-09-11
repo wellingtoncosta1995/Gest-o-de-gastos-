@@ -1,8 +1,8 @@
-/* Meu Financeiro — atualização rápida + aviso de nova versão. */
+/* Meu Financeiro — atualização rápida + versão sempre sincronizada. */
 (function(){
   'use strict';
+  const APP_VERSION='64';
   const KEY='mf:last-app-version';
-  let current='';
   let reloading=false;
 
   function toast(version){
@@ -20,11 +20,16 @@
     setTimeout(()=>{el.classList.remove('show');setTimeout(()=>el.remove(),280)},4200);
   }
 
+  function forceVersion(version=APP_VERSION){
+    const v='v'+String(version).replace(/^v/i,'');
+    document.querySelectorAll('[id^="mf-version"],.mf-app-version').forEach(el=>{if(el.textContent!==v)el.textContent=v});
+    document.querySelectorAll('[data-app-version]').forEach(el=>{if(el.textContent!==v)el.textContent=v});
+  }
+
   function syncVersion(version){
-    current=String(version||'').replace(/^v/i,'');
-    if(!current)return;
-    toast(current);
-    document.querySelectorAll('[id^="mf-version"],.mf-app-version').forEach(el=>{el.textContent='v'+current});
+    const clean=String(version||APP_VERSION).replace(/^v/i,'');
+    forceVersion(clean);
+    toast(clean);
   }
 
   function askVersion(){navigator.serviceWorker.controller?.postMessage({type:'GET_APP_VERSION'})}
@@ -32,12 +37,16 @@
     if(!('serviceWorker' in navigator))return;
     try{const reg=await navigator.serviceWorker.getRegistration();if(reg)await reg.update()}catch(e){}
     askVersion();
+    forceVersion(APP_VERSION);
   }
+
+  const obs=new MutationObserver(()=>forceVersion(APP_VERSION));
+  function startObserver(){if(document.body)obs.observe(document.body,{childList:true,subtree:true,characterData:true})}
 
   if('serviceWorker' in navigator){
     navigator.serviceWorker.addEventListener('message',e=>{
       const d=e.data||{};
-      if(d.type==='APP_VERSION'||d.type==='APP_UPDATED')syncVersion(d.version);
+      if(d.type==='APP_VERSION'||d.type==='APP_UPDATED')syncVersion(d.version||APP_VERSION);
     });
     navigator.serviceWorker.addEventListener('controllerchange',()=>{
       if(reloading)return;
@@ -45,11 +54,13 @@
       sessionStorage.setItem('mf:just-updated','1');
       location.reload();
     });
-    window.addEventListener('load',()=>{setTimeout(check,250);setTimeout(check,2500)});
-    window.addEventListener('pageshow',()=>setTimeout(check,300));
-    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')setTimeout(check,150)});
-    setInterval(()=>{if(document.visibilityState==='visible')check()},60000);
+    window.addEventListener('load',()=>{forceVersion(APP_VERSION);setTimeout(check,150);setTimeout(check,1200)});
+    window.addEventListener('pageshow',()=>{forceVersion(APP_VERSION);setTimeout(check,150)});
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){forceVersion(APP_VERSION);setTimeout(check,100)}});
+    setInterval(()=>{if(document.visibilityState==='visible')check()},30000);
   }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{startObserver();forceVersion(APP_VERSION);toast(APP_VERSION)});else{startObserver();forceVersion(APP_VERSION);toast(APP_VERSION)}
 
   const style=document.createElement('style');
   style.textContent=`
