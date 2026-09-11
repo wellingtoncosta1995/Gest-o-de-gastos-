@@ -1,8 +1,8 @@
 // Meu Financeiro — shell com atualização rápida e aviso de versão.
 const PREFIX='meu-financeiro:'+self.registration.scope+':';
-const VERSION='63';
+const VERSION='64';
 const CACHE=PREFIX+VERSION;
-const ASSETS=['./','./index.html','./pierre-layout.css?v=40','./app-accessibility.css?v=58','./app-core.js?v=58','./app-v50.js?v=58','./app-subscription-logos-v56.js?v=58','./app-settings-icon-v59.js?v=60','./app-cards-v61.js?v=61','./app-update-notifier.js?v=63','./logo-meu-financeiro.svg?v=62','./app-icon.svg?v=35','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
+const ASSETS=['./','./index.html','./pierre-layout.css?v=40','./app-accessibility.css?v=58','./app-core.js?v=58','./app-v50.js?v=58','./app-subscription-logos-v56.js?v=58','./app-settings-icon-v59.js?v=60','./app-cards-v61.js?v=61','./app-update-notifier.js?v=64','./logo-meu-financeiro.svg?v=62','./app-icon.svg?v=35','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 const CDN=new Set(['https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2','https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js']);
 
 self.addEventListener('install',event=>event.waitUntil((async()=>{
@@ -28,7 +28,7 @@ async function pageResponse(response){
   html=html.replace(/logo-meu-financeiro\.svg\?v=\d+/g,'logo-meu-financeiro.svg?v=62');
   html=html.replace(/<script[^>]*src=["'][^"']*app-cards-v61\.js[^"']*["'][^>]*><\/script>\s*/gi,'');
   html=html.replace(/<script[^>]*src=["'][^"']*app-update-notifier\.js[^"']*["'][^>]*><\/script>\s*/gi,'');
-  html=html.replace('</head>','<script defer src="./app-cards-v61.js?v=61"></script>\n<script defer src="./app-update-notifier.js?v=63"></script>\n</head>');
+  html=html.replace('</head>','<script defer src="./app-cards-v61.js?v=61"></script>\n<script defer src="./app-update-notifier.js?v=64"></script>\n</head>');
   return new Response(html,{status:response.status,statusText:response.statusText,headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store, no-cache, must-revalidate'}});
 }
 
