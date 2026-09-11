@@ -1,9 +1,11 @@
-/* Meu Financeiro — atualização rápida + versão sempre sincronizada. */
+/* Meu Financeiro — atualização rápida sem travar a interface. */
 (function(){
   'use strict';
-  const APP_VERSION='64';
+  const APP_VERSION='65';
   const KEY='mf:last-app-version';
-  let reloading=false;
+  const RELOAD_KEY='mf:reload-version';
+  let checking=false;
+  let lastCheck=0;
 
   function toast(version){
     if(!version)return;
@@ -17,13 +19,12 @@
     el.innerHTML='<span>✓</span><div><b>App atualizado</b><small>Meu Financeiro agora está na v'+version+'</small></div>';
     document.body.appendChild(el);
     requestAnimationFrame(()=>el.classList.add('show'));
-    setTimeout(()=>{el.classList.remove('show');setTimeout(()=>el.remove(),280)},4200);
+    setTimeout(()=>{el.classList.remove('show');setTimeout(()=>el.remove(),280)},3800);
   }
 
   function forceVersion(version=APP_VERSION){
     const v='v'+String(version).replace(/^v/i,'');
-    document.querySelectorAll('[id^="mf-version"],.mf-app-version').forEach(el=>{if(el.textContent!==v)el.textContent=v});
-    document.querySelectorAll('[data-app-version]').forEach(el=>{if(el.textContent!==v)el.textContent=v});
+    document.querySelectorAll('[id^="mf-version"],.mf-app-version,[data-app-version]').forEach(el=>{if(el.textContent!==v)el.textContent=v});
   }
 
   function syncVersion(version){
@@ -32,16 +33,18 @@
     toast(clean);
   }
 
-  function askVersion(){navigator.serviceWorker.controller?.postMessage({type:'GET_APP_VERSION'})}
-  async function check(){
-    if(!('serviceWorker' in navigator))return;
-    try{const reg=await navigator.serviceWorker.getRegistration();if(reg)await reg.update()}catch(e){}
-    askVersion();
+  async function check(force=false){
+    if(!('serviceWorker' in navigator)||checking)return;
+    const now=Date.now();
+    if(!force&&now-lastCheck<45000)return;
+    checking=true;lastCheck=now;
+    try{
+      const reg=await navigator.serviceWorker.getRegistration();
+      if(reg)await reg.update();
+      navigator.serviceWorker.controller?.postMessage({type:'GET_APP_VERSION'});
+    }catch(e){}finally{checking=false}
     forceVersion(APP_VERSION);
   }
-
-  const obs=new MutationObserver(()=>forceVersion(APP_VERSION));
-  function startObserver(){if(document.body)obs.observe(document.body,{childList:true,subtree:true,characterData:true})}
 
   if('serviceWorker' in navigator){
     navigator.serviceWorker.addEventListener('message',e=>{
@@ -49,18 +52,18 @@
       if(d.type==='APP_VERSION'||d.type==='APP_UPDATED')syncVersion(d.version||APP_VERSION);
     });
     navigator.serviceWorker.addEventListener('controllerchange',()=>{
-      if(reloading)return;
-      reloading=true;
-      sessionStorage.setItem('mf:just-updated','1');
-      location.reload();
+      if(sessionStorage.getItem(RELOAD_KEY)===APP_VERSION)return;
+      sessionStorage.setItem(RELOAD_KEY,APP_VERSION);
+      setTimeout(()=>location.reload(),120);
     });
-    window.addEventListener('load',()=>{forceVersion(APP_VERSION);setTimeout(check,150);setTimeout(check,1200)});
-    window.addEventListener('pageshow',()=>{forceVersion(APP_VERSION);setTimeout(check,150)});
-    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){forceVersion(APP_VERSION);setTimeout(check,100)}});
-    setInterval(()=>{if(document.visibilityState==='visible')check()},30000);
+    window.addEventListener('load',()=>{forceVersion(APP_VERSION);setTimeout(()=>check(true),500)});
+    window.addEventListener('pageshow',()=>setTimeout(()=>check(false),700));
+    window.addEventListener('focus',()=>setTimeout(()=>check(false),400));
+    document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')setTimeout(()=>check(false),500)});
+    setInterval(()=>{if(document.visibilityState==='visible')check(false)},120000);
   }
 
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{startObserver();forceVersion(APP_VERSION);toast(APP_VERSION)});else{startObserver();forceVersion(APP_VERSION);toast(APP_VERSION)}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{forceVersion(APP_VERSION);toast(APP_VERSION)});else{forceVersion(APP_VERSION);toast(APP_VERSION)}
 
   const style=document.createElement('style');
   style.textContent=`
