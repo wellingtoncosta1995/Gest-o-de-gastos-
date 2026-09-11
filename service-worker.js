@@ -1,15 +1,16 @@
 // Cache only this app's public shell. Authenticated Supabase requests stay on the network.
 const PREFIX='meu-financeiro:'+self.registration.scope+':';
-const CACHE=PREFIX+'61';
-const ASSETS=['./','./index.html','./pierre-layout.css?v=40','./app-accessibility.css?v=58','./app-core.js?v=58','./app-v50.js?v=58','./app-subscription-logos-v56.js?v=58','./app-settings-icon-v59.js?v=60','./app-cards-v61.js?v=61','./logo-meu-financeiro.svg?v=36','./app-icon.svg?v=35','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
+const CACHE=PREFIX+'62';
+const ASSETS=['./','./index.html','./pierre-layout.css?v=40','./app-accessibility.css?v=58','./app-core.js?v=58','./app-v50.js?v=58','./app-subscription-logos-v56.js?v=58','./app-settings-icon-v59.js?v=60','./app-cards-v61.js?v=61','./logo-meu-financeiro.svg?v=62','./app-icon.svg?v=35','./manifest.webmanifest','./icon-192.png','./icon-512.png'];
 const CDN=new Set(['https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2','https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js']);
 self.addEventListener('install',event=>event.waitUntil((async()=>{const cache=await caches.open(CACHE);await cache.addAll(ASSETS);await self.skipWaiting()})()));
 self.addEventListener('activate',event=>event.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(k=>k.startsWith(PREFIX)&&k!==CACHE).map(k=>caches.delete(k)));await self.clients.claim()})()));
 async function pageResponse(response){
-  const html=await response.text();
-  const clean=html.replace(/<script[^>]*src=["'][^"']*app-cards-v61\.js[^"']*["'][^>]*><\/script>\s*/gi,'');
-  const patched=clean.replace('</head>','<script defer src="./app-cards-v61.js?v=61"></script>\n</head>');
-  return new Response(patched,{status:response.status,statusText:response.statusText,headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'}});
+  let html=await response.text();
+  html=html.replace(/logo-meu-financeiro\.svg\?v=\d+/g,'logo-meu-financeiro.svg?v=62');
+  html=html.replace(/<script[^>]*src=["'][^"']*app-cards-v61\.js[^"']*["'][^>]*><\/script>\s*/gi,'');
+  html=html.replace('</head>','<script defer src="./app-cards-v61.js?v=61"></script>\n</head>');
+  return new Response(html,{status:response.status,statusText:response.statusText,headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'}});
 }
 self.addEventListener('fetch',event=>{
   if(event.request.method!=='GET')return;
